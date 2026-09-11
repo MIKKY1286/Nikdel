@@ -5,13 +5,19 @@ import {
   Wrench,
   HardHat,
   PaintBucket,
-  Tractor
+  Tractor,
+  ArrowRight,
+  ShieldCheck
 } from "lucide-react";
 import { motion } from "framer-motion";
 import productService from "../services/product.service";
+import { useAuth } from "../context/AuthContext";
+
 
 export default function Home() {
   const [bestSelling, setBestSelling] = useState([]);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

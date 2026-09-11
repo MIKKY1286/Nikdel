@@ -1,0 +1,51 @@
+import fs from 'fs';
+import path from 'path';
+
+const backendPath = '../NIkdel-backend';
+const couponModelPath = path.join(backendPath, 'src', 'models', 'Coupon.js');
+
+const couponModelCode = `import mongoose from 'mongoose';
+
+const couponSchema = new mongoose.Schema({
+  code: {
+    type: String,
+    required: [true, 'Please add a coupon code'],
+    unique: true,
+    trim: true,
+    uppercase: true
+  },
+  value: {
+    type: Number,
+    required: [true, 'Please add a discount value'],
+    min: 0
+  },
+  type: {
+    type: String,
+    enum: ['percentage', 'fixed', 'free_shipping'],
+    default: 'percentage'
+  },
+  expiryDate: {
+    type: Date,
+    required: [true, 'Please add an expiry date']
+  },
+  usageCount: {
+    type: Number,
+    default: 100
+  },
+  uses: {
+    type: Number,
+    default: 0
+  },
+  status: {
+    type: String,
+    enum: ['active', 'expired'],
+    default: 'active'
+  }
+}, {
+  timestamps: true
+});
+
+export const Coupon = mongoose.model('Coupon', couponSchema);
+`;
+fs.writeFileSync(couponModelPath, couponModelCode);
+console.log('Patched Coupon.js for frontend compatibility');

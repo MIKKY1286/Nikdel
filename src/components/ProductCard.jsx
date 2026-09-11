@@ -116,8 +116,16 @@ export default function ProductCard({ product }) {
 
           {cartItem ? (
             <div className="flex items-center bg-slate-100 rounded-xl p-1 shadow-sm">
-              <button 
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); quantity > 1 ? updateQuantity(cartIndex, quantity - 1) : removeFromCart(cartIndex); }}
+              <button
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  e.stopPropagation(); 
+                  if (quantity > 1) {
+                    updateQuantity(cartIndex, quantity - 1);
+                  } else {
+                    removeFromCart(cartIndex);
+                  }
+                }}
                 className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-900 bg-white rounded-lg shadow-sm transition-colors"
               >
                 {quantity > 1 ? <Minus size={14} /> : <Trash2 size={14} className="text-red-500" />}

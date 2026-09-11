@@ -36,6 +36,7 @@ export default function AdminProductForm({ isOpen, onClose, onSave, editingProdu
     fetchCategories();
 
     if (editingProduct) {
+      // eslint-disable-next-line
       setFormData(editingProduct);
     } else {
       setFormData(prev => ({

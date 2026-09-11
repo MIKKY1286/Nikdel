@@ -24,6 +24,7 @@ export default function AdminCategories() {
 
   useEffect(() => {
     fetchCategories();
+    // eslint-disable-next-line
   }, []);
 
   const handleDelete = async (id) => {

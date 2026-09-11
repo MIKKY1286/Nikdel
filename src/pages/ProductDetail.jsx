@@ -50,9 +50,9 @@ export default function ProductDetail() {
   const cartIndex = cart?.findIndex(item => item.id === productId);
 
   useEffect(() => {
-    if (cartItem) {
+    if (cartItem && quantity !== cartItem.quantity) {
       setQuantity(cartItem.quantity);
-    } else {
+    } else if (!cartItem && quantity !== 1) {
       setQuantity(1);
     }
   }, [cartItem]);

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2, Mail } from "lucide-react";
-import { getAdminData, saveAdminData } from "../../utils/adminMockData";
 import adminService from "../../services/admin.service";
 import AdminCustomerForm from "../../components/admin/AdminCustomerForm";
 
@@ -9,7 +8,6 @@ export default function AdminCustomers() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
-
   const [loading, setLoading] = useState(true);
 
   const fetchUsers = async () => {
@@ -35,6 +33,7 @@ export default function AdminCustomers() {
 
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line
   }, []);
 
   const handleDelete = (id) => {

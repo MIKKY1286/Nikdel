@@ -2,30 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import { 
-  ArrowRight, 
-  ShieldCheck, 
-  Sparkles,
-  Smartphone,
-  Shirt,
-  Watch,
-  Hammer,
   Wrench,
   HardHat,
   PaintBucket,
-  Droplet,
-  Zap,
-  Tent,
-  Tractor,
-  Umbrella,
-  Leaf
+  Tractor
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useAuth } from "../context/AuthContext";
 import productService from "../services/product.service";
 
 export default function Home() {
-  const [featuredProducts, setFeaturedProducts] = useState([]);
-  const [newArrivals, setNewArrivals] = useState([]);
   const [bestSelling, setBestSelling] = useState([]);
   
   const [loading, setLoading] = useState(true);

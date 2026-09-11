@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { Search, Bell, MessageSquare, LogOut, Menu } from "lucide-react";
+import { Search, Bell, MessageSquare, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminHeader({ toggleSidebar }) {

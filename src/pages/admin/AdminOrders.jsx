@@ -36,6 +36,7 @@ export default function AdminOrders() {
   // Load orders
   useEffect(() => {
     fetchOrders();
+    // eslint-disable-next-line
   }, []);
 
   // Update order status

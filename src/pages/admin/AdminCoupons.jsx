@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2, Ticket } from "lucide-react";
-import { mockCoupons } from "../../utils/adminMockData";
 import adminService from "../../services/admin.service";
 import AdminCouponForm from "../../components/admin/AdminCouponForm";
 import { useToast } from "../../context/ToastContext";
@@ -29,6 +28,7 @@ export default function AdminCoupons() {
 
   useEffect(() => {
     fetchCoupons();
+    // eslint-disable-next-line
   }, []);
 
   const handleDelete = async (id) => {

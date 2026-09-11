@@ -10,7 +10,6 @@ export default function AdminProducts() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
   const fetchProducts = async () => {
@@ -27,6 +26,7 @@ export default function AdminProducts() {
 
   useEffect(() => {
     fetchProducts();
+    // eslint-disable-next-line
   }, []);
 
   const handleDelete = async (id) => {

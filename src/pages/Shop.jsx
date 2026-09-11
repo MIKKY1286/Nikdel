@@ -48,8 +48,13 @@ export default function Shop() {
 
   // Sync state with URL search params when they change
   useEffect(() => {
-    setSearchTerm(searchUrlQuery);
-    setSelectedCategory(categoryUrlQuery);
+    if (searchTerm !== searchUrlQuery) {
+      setSearchTerm(searchUrlQuery);
+    }
+    if (selectedCategory !== categoryUrlQuery) {
+      setSelectedCategory(categoryUrlQuery);
+    }
+    // eslint-disable-next-line
   }, [searchUrlQuery, categoryUrlQuery]);
 
   // Fetch products based on filters

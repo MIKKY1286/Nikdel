@@ -9,7 +9,6 @@ import { useToast } from "../../context/ToastContext";
 import adminService from "../../services/admin.service";
 
 export default function DashboardHome() {
-  const { showToast } = useToast();
   const [stats, setStats] = useState({
     totalSales: 0,
     totalOrders: 0,

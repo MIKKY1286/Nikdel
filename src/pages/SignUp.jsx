@@ -79,9 +79,11 @@ export default function SignUp({ isAdmin = false }) {
         
         {/* Logo/Header */}
         <div className="relative z-10 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center font-extrabold text-xl border border-brand-500/30">
-            N
-          </div>
+          <img 
+            src="/favicon.jpg" 
+            alt="Nikdel Logo" 
+            className="w-10 h-10 rounded-xl object-cover border border-brand-500/30" 
+          />
           <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-brand-300 to-brand-100 bg-clip-text text-transparent">
             Nikdel
           </span>

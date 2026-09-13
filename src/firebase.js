@@ -1,7 +1,9 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { env } from "./env";
+
+const googleProvider = new GoogleAuthProvider();
 
 const firebaseConfig = {
   apiKey: env.FIREBASE_API_KEY,
@@ -37,5 +39,5 @@ if (
   console.log("Using mock mode: Firebase credentials not set.");
 }
 
-export { auth, db, isMockMode };
+export { auth, db, isMockMode, googleProvider };
 export const PAYSTACK_PUBLIC_KEY = env.PAYSTACK_PUBLIC_KEY;

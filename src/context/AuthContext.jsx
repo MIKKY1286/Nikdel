@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import api from "../services/api";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../firebase";
 
 const AuthContext = createContext();
 
@@ -87,9 +89,34 @@ export function AuthProvider({ children }) {
     setCurrentUser(null);
   };
 
-  // Google Login function (placeholder)
+  // Google Login function
   const loginWithGoogle = async () => {
-    return Promise.reject(new Error("Google Sign-In is coming soon! Our backend OAuth integration is currently under development."));
+    try {
+      // 1. Trigger Firebase Google Sign-In popup
+      const result = await signInWithPopup(auth, googleProvider);
+      
+      // 2. Get the Firebase ID token
+      const idToken = await result.user.getIdToken();
+      
+      // 3. Send the token to the backend to authenticate and get our custom JWT
+      const response = await api.post("/auth/google", { token: idToken });
+      
+      const payload = response.data.data || response.data;
+      const token = payload.token;
+      const userData = payload;
+      
+      if (token) {
+        localStorage.setItem("nikdel_token", token);
+      }
+      if (userData) {
+        localStorage.setItem("nikdel_user", JSON.stringify(userData));
+        setCurrentUser(userData);
+      }
+      return userData;
+    } catch (error) {
+      console.error("Google login failed", error);
+      throw error;
+    }
   };
 
   // Reset Password function

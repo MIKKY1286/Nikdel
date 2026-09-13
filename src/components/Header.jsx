@@ -42,9 +42,11 @@ export default function Header() {
           {/* Logo & Location */}
           <div className="flex items-center gap-6 shrink-0">
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md transform transition-transform group-hover:scale-105">
-                <span className="font-bold text-xl">N</span>
-              </div>
+              <img 
+                src="/favicon.jpg" 
+                alt="Nikdel Logo" 
+                className="w-10 h-10 rounded-xl object-cover shadow-md transform transition-transform group-hover:scale-105" 
+              />
               <span className="font-extrabold text-2xl tracking-tight text-slate-900">
                 NIKDEL
               </span>

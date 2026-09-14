@@ -141,7 +141,7 @@ export default function Home() {
       className="space-y-16"
     >
       {/* Top Layout: Categories Sidebar + Hero Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar */}
           <div className="hidden lg:block w-[260px] shrink-0 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
@@ -181,20 +181,7 @@ export default function Home() {
                     {slide.desc}
                   </p>
                   
-                  <div className="flex items-center gap-5 pt-3">
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
-                      <Link to="/shop" className="inline-block bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm px-8 py-3.5 rounded-lg shadow-md shadow-brand-600/20 transition-all">
-                        Shop Now
-                      </Link>
-                    </motion.div>
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl font-extrabold text-brand-600 tracking-tight">{slide.price}</span>
-                        <span className="text-sm font-bold text-slate-400 line-through">{slide.oldPrice}</span>
-                      </div>
-                      <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Don't miss this limited time offer.</span>
-                    </div>
-                  </div>
+
                 </div>
                 
                 {/* Banner Image Right */}

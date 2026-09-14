@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "../context/AuthContext";
-import { ShoppingCart, Star, Check, Plus, Minus, Trash2 } from "lucide-react";
+import { ShoppingCart, Star, Check, Plus, Minus, Trash2, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function ProductCard({ product }) {
   const { addToCart, cart, removeFromCart, updateQuantity } = useCart();
+  const { wishlist, toggleWishlist } = useWishlist();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const [adding, setAdding] = useState(false);
@@ -14,8 +16,19 @@ export default function ProductCard({ product }) {
 
   const productName = product.name || product.title || "Unnamed Product";
   const productId = product._id || product.id;
-  const cartItem = cart?.find(item => item.id === productId);
-  const cartIndex = cart?.findIndex(item => item.id === productId);
+  const cartItem = cart?.find(item => {
+    const id = item.product?.id || item.product?._id || item.product || item.id || item._id;
+    return id === productId;
+  });
+  const cartIndex = cart?.findIndex(item => {
+    const id = item.product?.id || item.product?._id || item.product || item.id || item._id;
+    return id === productId;
+  });
+  
+  const isWishlisted = wishlist?.some(item => {
+    const id = item.product?.id || item.product?._id || item.product || item.id || item._id;
+    return id === productId;
+  });
   const quantity = cartItem ? cartItem.quantity : 0;
 
   // Parse image: some APIs return an array of images, others a single string
@@ -80,6 +93,18 @@ export default function ProductCard({ product }) {
         <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-[10px] font-bold text-slate-700 px-3 py-1 rounded-full border border-slate-100 shadow-sm uppercase tracking-wider">
           {categoryName}
         </span>
+        
+        {/* Wishlist Button */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleWishlist(product);
+          }}
+          className="absolute top-4 right-4 bg-white/90 backdrop-blur-md p-2 rounded-full border border-slate-100 shadow-sm hover:scale-110 transition-transform"
+        >
+          <Heart size={16} className={isWishlisted ? "fill-red-500 text-red-500" : "text-slate-400"} />
+        </button>
       </div>
 
       {/* Info Content Section */}

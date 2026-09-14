@@ -112,11 +112,18 @@ export default function Cart() {
         <div className="lg:col-span-2 space-y-4">
           <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
             <div className="divide-y divide-slate-100">
-              {cart.map((item, index) => (
-                <div key={item.id + "-" + index} className="p-6 flex gap-4 sm:gap-6 flex-col sm:flex-row items-start sm:items-center">
+              {cart.map((item, index) => {
+                const title = item.title || item.product?.name || "Product";
+                const image = item.image || item.product?.images?.[0] || "";
+                const category = item.category || item.product?.category?.name || "General";
+                const price = parseFloat(item.price || item.product?.price || 0).toFixed(2);
+                const itemId = item.id || item._id || index;
+
+                return (
+                <div key={itemId + "-" + index} className="p-6 flex gap-4 sm:gap-6 flex-col sm:flex-row items-start sm:items-center">
                   <img
-                    src={item.image}
-                    alt={item.title}
+                    src={image}
+                    alt={title}
                     className="w-20 h-20 rounded-xl object-cover bg-slate-50 border border-slate-100 shrink-0"
                     crossOrigin="anonymous"
                   />
@@ -124,20 +131,20 @@ export default function Cart() {
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-slate-800 text-sm truncate hover:text-brand-600 cursor-pointer">
-                      {item.title}
+                      {title}
                     </h3>
                     <p className="text-xs text-slate-400 mt-1 uppercase font-semibold tracking-wider">
-                      {item.category}
+                      {category}
                     </p>
                     <p className="text-sm font-semibold text-slate-750 mt-2 sm:hidden">
-                      ${parseFloat(item.price).toFixed(2)}
+                      ${price}
                     </p>
                   </div>
 
                   {/* Desktop Price */}
                   <div className="hidden sm:block text-right shrink-0">
                     <span className="text-sm font-bold text-slate-800">
-                      ${parseFloat(item.price).toFixed(2)}
+                      ${price}
                     </span>
                   </div>
 
@@ -171,7 +178,8 @@ export default function Cart() {
                     <Trash2 size={18} />
                   </button>
                 </div>
-              ))}
+              );
+            })}
             </div>
           </div>
 

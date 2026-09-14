@@ -42,9 +42,10 @@ export function CartProvider({ children }) {
         const cartRes = await api.get("/cart");
         if (active) {
           const cartData = cartRes.data?.data || cartRes.data || {};
-          setCart(cartData.items || []);
-          setCartTotal(cartData.total || 0);
-          setCartItemCount(cartData.itemCount || 0);
+          const items = cartData.items || [];
+          setCart(items);
+          setCartTotal(cartData.subtotal || cartData.total || 0);
+          setCartItemCount(cartData.itemCount || items.reduce((acc, item) => acc + item.quantity, 0));
         }
 
         // Fetch Orders
@@ -81,9 +82,10 @@ export function CartProvider({ children }) {
       });
       const updatedCart = response.data?.data || response.data;
       
-      setCart(updatedCart.items || []);
-      setCartTotal(updatedCart.total || 0);
-      setCartItemCount(updatedCart.itemCount || 0);
+      const items = updatedCart.items || [];
+      setCart(items);
+      setCartTotal(updatedCart.subtotal || updatedCart.total || 0);
+      setCartItemCount(updatedCart.itemCount || items.reduce((acc, item) => acc + item.quantity, 0));
       
       showToast(`Added "${product.title}" to cart!`, "success");
       return true;
@@ -107,9 +109,10 @@ export function CartProvider({ children }) {
       const response = await api.delete(`/cart/items/${productId}`);
       const updatedCart = response.data?.data || response.data;
       
-      setCart(updatedCart.items || []);
-      setCartTotal(updatedCart.total || 0);
-      setCartItemCount(updatedCart.itemCount || 0);
+      const items = updatedCart.items || [];
+      setCart(items);
+      setCartTotal(updatedCart.subtotal || updatedCart.total || 0);
+      setCartItemCount(updatedCart.itemCount || items.reduce((acc, item) => acc + item.quantity, 0));
       
       showToast(`Removed from cart.`, "success");
     } catch (error) {
@@ -128,12 +131,13 @@ export function CartProvider({ children }) {
     const productId = item.product?.id || item.product?._id || item.productId || item.id;
 
     try {
-      const response = await api.put(`/cart/items/${productId}`, { quantity });
+      const response = await api.patch(`/cart/items/${productId}`, { quantity });
       const updatedCart = response.data?.data || response.data;
       
-      setCart(updatedCart.items || []);
-      setCartTotal(updatedCart.total || 0);
-      setCartItemCount(updatedCart.itemCount || 0);
+      const items = updatedCart.items || [];
+      setCart(items);
+      setCartTotal(updatedCart.subtotal || updatedCart.total || 0);
+      setCartItemCount(updatedCart.itemCount || items.reduce((acc, item) => acc + item.quantity, 0));
     } catch (error) {
       console.error("Error updating quantity:", error);
       showToast("Failed to update quantity.", "error");

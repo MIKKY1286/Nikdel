@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { ToastProvider } from "./context/ToastContext";
+import { WishlistProvider } from "./context/WishlistContext";
 
 // Components
 import Header from "./components/Header";
@@ -58,7 +59,7 @@ const MainLayout = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3 }}
-          className="flex-grow py-8 sm:py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full"
+          className="flex-grow pt-4 pb-8 sm:pt-6 sm:pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full"
         >
           <Outlet />
         </motion.main>
@@ -99,7 +100,8 @@ function App() {
       <ToastProvider>
         <AuthProvider>
           <CartProvider>
-            <Routes>
+            <WishlistProvider>
+              <Routes>
               {/* Main App Routes (with Header and Footer) */}
               <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
@@ -155,7 +157,8 @@ function App() {
                 <Route path="knowledge-base" element={<AdminKnowledgeBase />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
-            </Routes>
+              </Routes>
+            </WishlistProvider>
           </CartProvider>
         </AuthProvider>
       </ToastProvider>

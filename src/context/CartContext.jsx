@@ -55,7 +55,11 @@ export function CartProvider({ children }) {
           setOrders(ordersData);
         }
       } catch (error) {
-        console.error("Error loading cart/orders from API:", error);
+        if (error.response && error.response.status === 401) {
+          // Silent failure for 401s since api interceptor will handle logout
+        } else {
+          console.error("Error loading cart/orders from API:", error);
+        }
       } finally {
         if (active) setLoadingCart(false);
       }

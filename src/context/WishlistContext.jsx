@@ -34,7 +34,7 @@ export function WishlistProvider({ children }) {
         const res = await api.get("/wishlist");
         if (active) {
           const data = res.data?.data || res.data || {};
-          setWishlist(data.items || []);
+          setWishlist(data.products || []);
         }
       } catch (error) {
         console.error("Error loading wishlist from API:", error);
@@ -63,7 +63,7 @@ export function WishlistProvider({ children }) {
       const response = await api.post(`/wishlist/${productId}`);
       const updatedWishlist = response.data?.data || response.data;
       
-      setWishlist(updatedWishlist.items || []);
+      setWishlist(updatedWishlist.products || []);
       showToast(`Added to wishlist!`, "success");
       return true;
     } catch (error) {
@@ -81,7 +81,7 @@ export function WishlistProvider({ children }) {
       const response = await api.delete(`/wishlist/${productId}`);
       const updatedWishlist = response.data?.data || response.data;
       
-      setWishlist(updatedWishlist.items || []);
+      setWishlist(updatedWishlist.products || []);
       showToast(`Removed from wishlist.`, "success");
       return true;
     } catch (error) {
@@ -94,7 +94,7 @@ export function WishlistProvider({ children }) {
   const toggleWishlist = async (product) => {
     const productId = product.id || product._id;
     const exists = wishlist.find(item => {
-      const id = item.product?.id || item.product?._id || item.product || item;
+      const id = item.id || item._id;
       return id === productId;
     });
 

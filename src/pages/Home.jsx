@@ -16,7 +16,6 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Home() {
   const [bestSelling, setBestSelling] = useState([]);
-  const [featuredProducts, setFeaturedProducts] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
   
   const [loading, setLoading] = useState(true);
@@ -113,8 +112,7 @@ export default function Home() {
         const response = await productService.getAllProducts({ limit: 12 });
         const data = response.products || response.data || response || [];
         
-        setFeaturedProducts(data.slice(0, 4));
-        setNewArrivals(data.slice().reverse().slice(0, 4));
+        setNewArrivals(data.slice(0, 4));
         setBestSelling(data.length > 2 ? [data[1], data[2], data[0], data[3]].filter(Boolean) : data.slice(0,4));
       } catch (err) {
         console.error("Error fetching featured products:", err);
@@ -127,10 +125,10 @@ export default function Home() {
   }, []);
 
   const categories = [
-    { name: "Power Tools", query: "power-tools", icon: Wrench, color: "bg-blue-50 text-blue-600 border-blue-100" },
+    { name: "Power Tools", query: "power-hand-tools", icon: Wrench, color: "bg-blue-50 text-blue-600 border-blue-100" },
     { name: "Building Materials", query: "building-materials", icon: HardHat, color: "bg-orange-50 text-orange-600 border-orange-100" },
-    { name: "Agriculture", query: "agriculture", icon: Tractor, color: "bg-emerald-50 text-emerald-600 border-emerald-100" },
-    { name: "Paints & Finishes", query: "paints", icon: PaintBucket, color: "bg-purple-50 text-purple-600 border-purple-100" }
+    { name: "Agriculture", query: "agricultural-tools", icon: Tractor, color: "bg-emerald-50 text-emerald-600 border-emerald-100" },
+    { name: "Paints & Finishes", query: "paints-finishes", icon: PaintBucket, color: "bg-purple-50 text-purple-600 border-purple-100" }
   ];
 
   return (

@@ -35,6 +35,7 @@ export default function AdminOrders() {
 
   // Load orders
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect
     fetchOrders();
     // eslint-disable-next-line
   }, []);

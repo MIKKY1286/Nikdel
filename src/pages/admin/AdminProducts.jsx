@@ -3,6 +3,7 @@ import { Plus, Search, Edit, Trash2 } from "lucide-react";
 import productService from "../../services/product.service";
 import AdminProductForm from "../../components/admin/AdminProductForm";
 import { useToast } from "../../context/ToastContext";
+import { useSearchParams } from "react-router-dom";
 
 export default function AdminProducts() {
   const { showToast } = useToast();
@@ -11,11 +12,18 @@ export default function AdminProducts() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
+  const categoryFilter = searchParams.get("category");
 
   const fetchProducts = async () => {
-    setLoading(true);
     try {
-      const res = await productService.getAllProducts();
+      const params = { status: 'all', isActive: 'all', limit: 100 };
+      if (categoryFilter) {
+        // Find products belonging to this category slug or id
+        params.category = categoryFilter;
+      }
+      const res = await productService.getAllProducts(params);
       setProducts(res.products || res.data || res || []);
     } catch (err) {
       console.error("Error fetching admin products", err);
@@ -25,9 +33,10 @@ export default function AdminProducts() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect
     fetchProducts();
     // eslint-disable-next-line
-  }, []);
+  }, [categoryFilter]);
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
@@ -115,51 +124,60 @@ export default function AdminProducts() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm">
-              {filtered.map(product => (
-                <tr key={product._id || product.id} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-4">
-                      <img src={product.images?.[0] || product.image || 'https://via.placeholder.com/150'} alt={product.name} className="w-10 h-10 rounded-lg object-cover border border-slate-200" />
-                      <div>
-                        <p className="font-bold text-slate-800">{product.name}</p>
-                        <p className="text-xs text-slate-400 font-mono">{product._id || product.id}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-slate-600 font-medium">{product.category?.name || product.category}</td>
-                  <td className="px-6 py-4 font-bold text-slate-900">${(product.price || 0).toFixed(2)}</td>
-                  <td className="px-6 py-4">
-                    <span className={`font-bold ${product.stock < 10 ? 'text-rose-500' : 'text-slate-600'}`}>
-                      {product.stock} units
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      product.status === 'published' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
-                      product.status === 'archived' ? 'bg-rose-50 text-rose-700 border border-rose-100' :
-                      'bg-amber-50 text-amber-700 border border-amber-100'
-                    }`}>
-                      {(product.status || 'draft').replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => handleOpenForm(product)} className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
-                        <Edit size={16} />
-                      </button>
-                      <button onClick={() => handleDelete(product._id || product.id)} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
-                        <Trash2 size={16} />
-                      </button>
+              {loading ? (
+                <tr>
+                  <td colSpan="6" className="px-6 py-12 text-center">
+                    <div className="flex justify-center items-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-4 border-brand-500 border-t-transparent"></div>
                     </div>
                   </td>
                 </tr>
-              ))}
-              {filtered.length === 0 && (
+              ) : filtered.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
                     No products found.
                   </td>
                 </tr>
+              ) : (
+                filtered.map(product => (
+                  <tr key={product._id || product.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-4">
+                        <img src={product.images?.[0] || product.image || 'https://via.placeholder.com/150'} alt={product.name} className="w-10 h-10 rounded-lg object-cover border border-slate-200" />
+                        <div>
+                          <p className="font-bold text-slate-800">{product.name}</p>
+                          <p className="text-xs text-slate-400 font-mono">{product._id || product.id}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-slate-600 font-medium">{product.category?.name || product.category}</td>
+                    <td className="px-6 py-4 font-bold text-slate-900">${(product.price || 0).toFixed(2)}</td>
+                    <td className="px-6 py-4">
+                      <span className={`font-bold ${product.stock < 10 ? 'text-rose-500' : 'text-slate-600'}`}>
+                        {product.stock} units
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        product.status === 'published' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
+                        product.status === 'archived' ? 'bg-rose-50 text-rose-700 border border-rose-100' :
+                        'bg-amber-50 text-amber-700 border border-amber-100'
+                      }`}>
+                        {(product.status || 'draft').replace('_', ' ')}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => handleOpenForm(product)} className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
+                          <Edit size={16} />
+                        </button>
+                        <button onClick={() => handleDelete(product._id || product.id)} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>

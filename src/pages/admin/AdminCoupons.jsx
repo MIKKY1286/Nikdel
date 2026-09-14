@@ -14,7 +14,6 @@ export default function AdminCoupons() {
   const { showToast } = useToast();
 
   const fetchCoupons = async () => {
-    setLoading(true);
     try {
       const data = await adminService.getAllCoupons();
       setCoupons(data.data || []);
@@ -27,6 +26,7 @@ export default function AdminCoupons() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect
     fetchCoupons();
     // eslint-disable-next-line
   }, []);

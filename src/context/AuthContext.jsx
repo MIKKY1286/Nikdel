@@ -34,6 +34,7 @@ export function AuthProvider({ children }) {
 
   // Initialize Auth state
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect
     loadUser();
 
     // Listen for unauthorized events to clear user state

@@ -34,22 +34,32 @@ export default function AdminProductForm({ isOpen, onClose, onSave, editingProdu
       }
     };
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
+  const [prevEditingProduct, setPrevEditingProduct] = useState(editingProduct);
+  if (editingProduct !== prevEditingProduct) {
+    setPrevEditingProduct(editingProduct);
     if (editingProduct) {
-      // eslint-disable-next-line
-      setFormData(editingProduct);
+      setFormData({
+        ...editingProduct,
+        image: editingProduct.images?.[0] || editingProduct.image || "",
+        category: editingProduct.category?._id || editingProduct.category || "",
+        price: editingProduct.price || "",
+        stock: editingProduct.stock || 0,
+      });
     } else {
-      setFormData(prev => ({
-        ...prev,
+      setFormData({
         name: "",
         description: "",
+        category: categories.length > 0 ? categories[0]._id : "",
         price: "",
         stock: "",
         status: "published",
         image: ""
-      }));
+      });
     }
-  }, [editingProduct, isOpen]);
+  }
 
   if (!isOpen) return null;
 
@@ -219,7 +229,7 @@ export default function AdminProductForm({ isOpen, onClose, onSave, editingProdu
                     <input
                       type="url"
                       name="image"
-                      value={formData.image}
+                      value={formData.image || ""}
                       onChange={handleChange}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-4 pr-10 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
                       placeholder="Or paste an image URL here..."

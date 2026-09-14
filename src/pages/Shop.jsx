@@ -47,15 +47,17 @@ export default function Shop() {
   }, []);
 
   // Sync state with URL search params when they change
-  useEffect(() => {
-    if (searchTerm !== searchUrlQuery) {
-      setSearchTerm(searchUrlQuery);
-    }
-    if (selectedCategory !== categoryUrlQuery) {
-      setSelectedCategory(categoryUrlQuery);
-    }
-    // eslint-disable-next-line
-  }, [searchUrlQuery, categoryUrlQuery]);
+  const [prevSearchUrlQuery, setPrevSearchUrlQuery] = useState(searchUrlQuery);
+  if (searchUrlQuery !== prevSearchUrlQuery) {
+    setPrevSearchUrlQuery(searchUrlQuery);
+    setSearchTerm(searchUrlQuery);
+  }
+
+  const [prevCategoryUrlQuery, setPrevCategoryUrlQuery] = useState(categoryUrlQuery);
+  if (categoryUrlQuery !== prevCategoryUrlQuery) {
+    setPrevCategoryUrlQuery(categoryUrlQuery);
+    setSelectedCategory(categoryUrlQuery);
+  }
 
   // Fetch products based on filters
   useEffect(() => {

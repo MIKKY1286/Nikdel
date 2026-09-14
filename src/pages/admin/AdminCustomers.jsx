@@ -8,10 +8,8 @@ export default function AdminCustomers() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   const fetchUsers = async () => {
-    setLoading(true);
     try {
       const data = await adminService.getAllUsers();
       const usersList = Array.isArray(data) ? data : (data.data || data.users || []);
@@ -25,13 +23,12 @@ export default function AdminCustomers() {
       }));
       setCustomers(mapped);
     } catch (err) {
-      console.error("Failed to fetch users", err);
-    } finally {
-      setLoading(false);
+      console.error("Error fetching customers", err);
     }
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect
     fetchUsers();
     // eslint-disable-next-line
   }, []);

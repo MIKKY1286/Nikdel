@@ -3,14 +3,17 @@ import { Plus, Search, Edit, Trash2 } from "lucide-react";
 import AdminCategoryForm from "../../components/admin/AdminCategoryForm";
 import categoryService from "../../services/category.service";
 import { useToast } from "../../context/ToastContext";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminCategories() {
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchCategories = async () => {
     try {
@@ -19,10 +22,13 @@ export default function AdminCategories() {
     } catch (err) {
       console.error("Failed to load categories", err);
       showToast("Failed to load categories", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect
     fetchCategories();
     // eslint-disable-next-line
   }, []);
@@ -99,37 +105,55 @@ export default function AdminCategories() {
       </div>
 
       {/* Data Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.map(category => (
-          <div key={category._id || category.id} className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group relative">
-            <div className="h-32 w-full bg-slate-100 relative">
-              <img src={category.image} alt={category.name} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
-              <div className="absolute bottom-4 left-4 text-white">
-                <h3 className="font-extrabold text-xl">{category.name}</h3>
-                <p className="text-xs font-semibold text-slate-300">{category.productCount} Products</p>
+      {loading ? (
+        <div className="py-12 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-4 border-brand-500 border-t-transparent"></div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filtered.map(category => (
+            <div 
+              key={category._id || category.id} 
+              onClick={() => navigate(`/admin/products?category=${category._id || category.id}`)}
+              className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group relative cursor-pointer"
+            >
+              <div className="h-32 w-full bg-slate-100 relative">
+                <img src={category.image} alt={category.name} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h3 className="font-extrabold text-xl">{category.name}</h3>
+                  <p className="text-xs font-semibold text-slate-300">{category.productCount} Products</p>
+                </div>
+                <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); handleOpenForm(category); }} 
+                    className="p-1.5 bg-white/20 backdrop-blur-sm text-white hover:bg-white/40 rounded-lg transition-colors"
+                  >
+                    <Edit size={14} />
+                  </button>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); handleDelete(category._id || category.id); }} 
+                    className="p-1.5 bg-rose-500/80 backdrop-blur-sm text-white hover:bg-rose-600 rounded-lg transition-colors"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </div>
-              <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => handleOpenForm(category)} className="p-1.5 bg-white/20 backdrop-blur-sm text-white hover:bg-white/40 rounded-lg transition-colors">
-                  <Edit size={14} />
-                </button>
-                <button onClick={() => handleDelete(category._id || category.id)} className="p-1.5 bg-rose-500/80 backdrop-blur-sm text-white hover:bg-rose-600 rounded-lg transition-colors">
-                  <Trash2 size={14} />
-                </button>
+              <div className="p-4 flex items-center justify-between border-t border-slate-50">
+                <span className="text-xs font-semibold text-slate-500">
+                  {category.productCount || 0} Products
+                </span>
+                <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                  category.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'
+                }`}>
+                  {category.status}
+                </span>
               </div>
             </div>
-            <div className="p-4 flex items-center justify-between">
-              <span className="text-xs font-mono text-slate-400">{category._id || category.id}</span>
-              <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                category.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'
-              }`}>
-                {category.status}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-      {filtered.length === 0 && (
+          ))}
+        </div>
+      )}
+      {!loading && filtered.length === 0 && (
         <div className="py-12 text-center text-slate-500 bg-white border border-slate-100 rounded-2xl">
           No categories found.
         </div>

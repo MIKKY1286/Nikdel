@@ -49,13 +49,15 @@ export default function ProductDetail() {
   const cartItem = cart?.find(item => item.id === productId);
   const cartIndex = cart?.findIndex(item => item.id === productId);
 
-  useEffect(() => {
+  const [prevCartItemQty, setPrevCartItemQty] = useState(cartItem?.quantity);
+  if (cartItem?.quantity !== prevCartItemQty) {
+    setPrevCartItemQty(cartItem?.quantity);
     if (cartItem && quantity !== cartItem.quantity) {
       setQuantity(cartItem.quantity);
     } else if (!cartItem && quantity !== 1) {
       setQuantity(1);
     }
-  }, [cartItem]);
+  }
 
   useEffect(() => {
     const countdown = setInterval(() => {
@@ -92,10 +94,23 @@ export default function ProductDetail() {
     }
   };
 
-  if (loading || !product) {
+  if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex justify-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 flex flex-col items-center justify-center space-y-4">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-brand-500 border-t-transparent"></div>
+        <p className="text-slate-500 font-medium animate-pulse">Loading product...</p>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 flex flex-col items-center justify-center space-y-4 text-center">
+        <h2 className="text-2xl font-bold text-slate-800">Product Not Found</h2>
+        <p className="text-slate-500">The product you're looking for doesn't exist or there was a network error loading it.</p>
+        <button onClick={() => window.location.reload()} className="px-6 py-2 bg-slate-900 text-white rounded-xl font-bold mt-4 hover:bg-brand-600 transition-colors">
+          Try Again
+        </button>
       </div>
     );
   }

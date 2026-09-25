@@ -80,7 +80,14 @@ export default function Shop() {
 
         const response = await productService.getAllProducts(params);
         // Expecting response structure like { products: [...] } or direct array
-        setProducts(response.products || response.data || response);
+        const fetchedData = response.products || response.data || response || [];
+        // Shuffle randomly for 'Featured'
+        const shuffled = [...fetchedData];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        setProducts(shuffled);
       } catch (err) {
         console.error("Error fetching shop products:", err);
         setError("Unable to load product list. Please try again.");
@@ -94,8 +101,15 @@ export default function Shop() {
     }
   }, [searchTerm, selectedCategory, priceRange, sortBy, filterCategories]);
 
-  // We no longer need local useMemo for filteredProducts since backend does it
-  const filteredProducts = products || [];
+  let filteredProducts = [...(products || [])];
+  
+  if (sortBy === "price-low") {
+    filteredProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
+  } else if (sortBy === "price-high") {
+    filteredProducts.sort((a, b) => (b.price || 0) - (a.price || 0));
+  } else if (sortBy === "title-az") {
+    filteredProducts.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  }
 
   // Clear all filters
   const handleClearFilters = () => {

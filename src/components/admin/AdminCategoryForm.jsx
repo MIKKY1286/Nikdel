@@ -16,8 +16,10 @@ export default function AdminCategoryForm({ isOpen, onClose, onSave, editingCate
 
   useEffect(() => {
     if (editingCategory) {
-      // eslint-disable-next-line
-      setFormData(editingCategory);
+      setFormData({
+        ...editingCategory,
+        status: editingCategory.isActive !== false ? "active" : "inactive"
+      });
     } else {
       // eslint-disable-next-line
       setFormData({
@@ -137,8 +139,11 @@ export default function AdminCategoryForm({ isOpen, onClose, onSave, editingCate
               <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Category Image URL</label>
               <div className="flex gap-4 items-start">
                 {formData.image && (
-                  <div className="w-16 h-16 rounded-xl border border-slate-200 overflow-hidden shrink-0">
+                  <div className="w-16 h-16 rounded-xl border border-slate-200 overflow-hidden shrink-0 relative group">
                     <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
+                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, image: "" }))} className="absolute top-1 right-1 bg-white rounded-full p-0.5 shadow-sm text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50">
+                        <X size={14} />
+                    </button>
                   </div>
                 )}
                 <div className="flex-1 relative space-y-3">

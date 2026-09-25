@@ -1,8 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Save, User, Bell, Shield, Globe, CreditCard } from "lucide-react";
+import { useSettings } from "../../context/SettingsContext";
+import { useToast } from "../../context/ToastContext";
 
 export default function AdminSettings() {
   const [activeTab, setActiveTab] = useState("general");
+  const { settings, updateSettings } = useSettings();
+  const { showToast } = useToast();
+
+  const [formData, setFormData] = useState({
+    storeName: "Nikdel Webstore",
+    contactEmail: "admin@nikdel.com",
+    storeDescription: "Premium building materials and agriculture webstore.",
+    currency: "USD",
+    timezone: "(GMT+00:00) London"
+  });
+
+  useEffect(() => {
+    if (settings) {
+      setFormData({
+        storeName: settings.storeName || "Nikdel Webstore",
+        contactEmail: settings.contactEmail || "admin@nikdel.com",
+        storeDescription: settings.storeDescription || "Premium building materials and agriculture webstore.",
+        currency: settings.currency || "USD",
+        timezone: settings.timezone || "(GMT+00:00) London"
+      });
+    }
+  }, [settings]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    const success = await updateSettings(formData);
+    if (success) {
+      showToast("Settings updated successfully", "success");
+    } else {
+      showToast("Failed to update settings", "error");
+    }
+  };
 
   const tabs = [
     { id: "general", label: "General", icon: <Globe size={18} /> },
@@ -19,7 +57,10 @@ export default function AdminSettings() {
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Settings</h1>
           <p className="text-sm text-slate-500 mt-1">Manage your store preferences and account settings.</p>
         </div>
-        <button className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors shadow-sm">
+        <button 
+          onClick={handleSave}
+          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors shadow-sm"
+        >
           <Save size={18} />
           Save Changes
         </button>
@@ -55,15 +96,15 @@ export default function AdminSettings() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Store Name</label>
-                    <input type="text" defaultValue="Nikdel Webstore" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
+                    <input type="text" name="storeName" value={formData.storeName} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Contact Email</label>
-                    <input type="email" defaultValue="admin@nikdel.com" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
+                    <input type="email" name="contactEmail" value={formData.contactEmail} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Store Description</label>
-                    <textarea rows="3" defaultValue="Premium building materials and agriculture webstore." className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all resize-none"></textarea>
+                    <textarea rows="3" name="storeDescription" value={formData.storeDescription} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all resize-none"></textarea>
                   </div>
                 </div>
               </div>
@@ -75,18 +116,19 @@ export default function AdminSettings() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Store Currency</label>
-                    <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all">
-                      <option>USD ($)</option>
-                      <option>EUR (€)</option>
-                      <option>GBP (£)</option>
+                    <select name="currency" value={formData.currency} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all">
+                      <option value="USD">USD ($)</option>
+                      <option value="EUR">EUR (€)</option>
+                      <option value="GBP">GBP (£)</option>
+                      <option value="NGN">NGN (₦)</option>
                     </select>
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Timezone</label>
-                    <select className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all">
-                      <option>(GMT-08:00) Pacific Time (US & Canada)</option>
-                      <option>(GMT-05:00) Eastern Time (US & Canada)</option>
-                      <option>(GMT+00:00) London</option>
+                    <select name="timezone" value={formData.timezone} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all">
+                      <option value="(GMT-08:00) Pacific Time (US & Canada)">(GMT-08:00) Pacific Time (US & Canada)</option>
+                      <option value="(GMT-05:00) Eastern Time (US & Canada)">(GMT-05:00) Eastern Time (US & Canada)</option>
+                      <option value="(GMT+00:00) London">(GMT+00:00) London</option>
                     </select>
                   </div>
                 </div>

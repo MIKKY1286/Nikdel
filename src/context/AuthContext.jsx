@@ -120,10 +120,26 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Reset Password function
-  const resetPassword = async (email) => {
-    const response = await api.post("/auth/forgot-password", { email });
+  // Forgot Password function
+  const forgotPassword = async (email) => {
+    const response = await api.post("/auth/forgotpassword", { email });
     return response.data;
+  };
+
+  // Submit Reset Password function
+  const submitResetPassword = async (token, password) => {
+    const response = await api.put(`/auth/resetpassword/${token}`, { password });
+    const payload = response.data.data || response.data;
+    const jwtToken = payload.token;
+    
+    if (jwtToken) {
+      localStorage.setItem("nikdel_token", jwtToken);
+    }
+    if (payload) {
+      localStorage.setItem("nikdel_user", JSON.stringify(payload));
+      setCurrentUser(payload);
+    }
+    return payload;
   };
 
   const value = {
@@ -132,7 +148,8 @@ export function AuthProvider({ children }) {
     login,
     loginWithGoogle,
     logout,
-    resetPassword
+    forgotPassword,
+    submitResetPassword
   };
 
   return (

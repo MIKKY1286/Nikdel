@@ -13,10 +13,11 @@ export default function AdminProductForm({ isOpen, onClose, onSave, editingProdu
     price: "",
     stock: "",
     status: "published",
-    image: ""
+    images: []
   });
   const [categories, setCategories] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [newImageUrl, setNewImageUrl] = useState("");
 
   useEffect(() => {
     // Fetch categories
@@ -43,7 +44,7 @@ export default function AdminProductForm({ isOpen, onClose, onSave, editingProdu
     if (editingProduct) {
       setFormData({
         ...editingProduct,
-        image: editingProduct.images?.[0] || editingProduct.image || "",
+        images: editingProduct.images?.length ? editingProduct.images : (editingProduct.image ? [editingProduct.image] : []),
         category: editingProduct.category?._id || editingProduct.category || "",
         price: editingProduct.price || "",
         stock: editingProduct.stock || 0,
@@ -56,7 +57,7 @@ export default function AdminProductForm({ isOpen, onClose, onSave, editingProdu
         price: "",
         stock: "",
         status: "published",
-        image: ""
+        images: []
       });
     }
   }
@@ -74,8 +75,7 @@ export default function AdminProductForm({ isOpen, onClose, onSave, editingProdu
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({
-      ...formData,
-      images: formData.image ? [formData.image] : undefined
+      ...formData
     });
   };
 
@@ -90,7 +90,7 @@ export default function AdminProductForm({ isOpen, onClose, onSave, editingProdu
       const imageUrl = response.data?.[0]?.url || response.url || response;
       
       if (typeof imageUrl === 'string' && imageUrl.startsWith('http')) {
-        setFormData(prev => ({ ...prev, image: imageUrl }));
+        setFormData(prev => ({ ...prev, images: [...prev.images, imageUrl] }));
         showToast("Image uploaded successfully!", "success");
       } else {
         throw new Error("Failed to extract image URL from server response.");
@@ -102,6 +102,13 @@ export default function AdminProductForm({ isOpen, onClose, onSave, editingProdu
     } finally {
       setUploading(false);
     }
+  };
+
+  const removeImage = (indexToRemove) => {
+    setFormData(prev => ({
+        ...prev,
+        images: prev.images.filter((_, i) => i !== indexToRemove)
+    }));
   };
 
   return (
@@ -217,23 +224,35 @@ export default function AdminProductForm({ isOpen, onClose, onSave, editingProdu
 
             {/* Image URL / Upload */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Product Image</label>
-              <div className="flex gap-4 items-start">
-                {formData.image && (
-                  <div className="w-16 h-16 rounded-xl border border-slate-200 overflow-hidden shrink-0">
-                    <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
+              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Product Images</label>
+              <div className="flex flex-col gap-4">
+                {formData.images.length > 0 && (
+                  <div className="flex flex-wrap gap-3">
+                    {formData.images.map((imgUrl, i) => (
+                      <div key={i} className="w-20 h-20 rounded-xl border border-slate-200 overflow-hidden shrink-0 relative group">
+                        <img src={imgUrl} alt={`Preview ${i}`} className="w-full h-full object-cover" />
+                        <button type="button" onClick={() => removeImage(i)} className="absolute top-1 right-1 bg-white rounded-full p-0.5 shadow-sm text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50">
+                            <X size={14} />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 )}
                 <div className="flex-1 relative space-y-3">
-                  <div className="relative">
+                  <div className="relative flex gap-2">
                     <input
                       type="url"
-                      name="image"
-                      value={formData.image || ""}
-                      onChange={handleChange}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-4 pr-10 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
+                      value={newImageUrl}
+                      onChange={(e) => setNewImageUrl(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-4 pr-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
                       placeholder="Or paste an image URL here..."
                     />
+                    <button type="button" onClick={() => {
+                        if(newImageUrl && newImageUrl.startsWith('http')) {
+                            setFormData(prev => ({ ...prev, images: [...prev.images, newImageUrl] }));
+                            setNewImageUrl('');
+                        }
+                    }} className="px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-xl text-sm font-semibold transition-colors">Add</button>
                   </div>
                   <div className="flex items-center gap-2">
                     <label className="cursor-pointer bg-white border border-slate-200 px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2">
@@ -250,7 +269,7 @@ export default function AdminProductForm({ isOpen, onClose, onSave, editingProdu
                   </div>
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400">For best results, use a square image (1:1 ratio) with a minimum resolution of 600x600px.</p>
+              <p className="text-[10px] text-slate-400">For best results, use square images (1:1 ratio) with a minimum resolution of 600x600px.</p>
             </div>
           </form>
         </div>

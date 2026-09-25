@@ -2,20 +2,24 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { useSettings } from "../context/SettingsContext";
+import api from "../services/api";
 import { Trash2, ShoppingBag, Plus, Minus, ArrowRight, Ticket, Check } from "lucide-react";
 
 export default function Cart() {
   const { currentUser } = useAuth();
   const { cart, removeFromCart, updateQuantity, cartTotal, orders } = useCart();
+  const { formatPrice, currency } = useSettings();
   const navigate = useNavigate();
 
   // Promo code states
   const [promoCode, setPromoCode] = useState("");
-  const [discountPercent, setDiscountPercent] = useState(0);
+  const [discountValue, setDiscountValue] = useState(0);
+  const [discountType, setDiscountType] = useState("");
   const [appliedPromo, setAppliedPromo] = useState("");
   const [promoError, setPromoError] = useState("");
 
-  const handleApplyPromo = (e) => {
+  const handleApplyPromo = async (e) => {
     e.preventDefault();
     setPromoError("");
     
@@ -25,12 +29,18 @@ export default function Cart() {
     }
 
     const code = promoCode.trim().toUpperCase();
-    if (code === "WELCOME10" || code === "NIKDEL10") {
-      setDiscountPercent(10);
+    if (!code) return;
+
+    try {
+      const response = await api.post("/coupons/validate", { code });
+      const { value, type } = response.data.data;
+      
       setAppliedPromo(code);
+      setDiscountValue(value);
+      setDiscountType(type);
       setPromoCode("");
-    } else {
-      setPromoError("Invalid discount code. Try WELCOME10!");
+    } catch (error) {
+      setPromoError(error.response?.data?.message || "Invalid discount code.");
     }
   };
 
@@ -79,7 +89,9 @@ export default function Cart() {
   }
 
   // Cost calculations
-  const discountAmount = cartTotal * (discountPercent / 100);
+  const discountAmount = discountType === 'percentage' 
+    ? cartTotal * (discountValue / 100) 
+    : (discountType === 'fixed' ? discountValue : 0);
   const subtotal = cartTotal - discountAmount;
   const tax = subtotal * 0.08;
   
@@ -92,7 +104,8 @@ export default function Cart() {
     // Navigate to checkout and pass discount info if any via router state
     navigate("/checkout", { 
       state: { 
-        discountPercent, 
+        discountValue, 
+        discountType,
         appliedPromo, 
         discountAmount 
       } 
@@ -137,14 +150,14 @@ export default function Cart() {
                       {category}
                     </p>
                     <p className="text-sm font-semibold text-slate-750 mt-2 sm:hidden">
-                      ${price}
+                      {formatPrice(price)}
                     </p>
                   </div>
 
                   {/* Desktop Price */}
                   <div className="hidden sm:block text-right shrink-0">
                     <span className="text-sm font-bold text-slate-800">
-                      ${price}
+                      {formatPrice(price)}
                     </span>
                   </div>
 
@@ -201,11 +214,12 @@ export default function Cart() {
               <div className="flex items-center justify-between bg-emerald-50 text-emerald-700 text-xs font-semibold px-3.5 py-2.5 rounded-xl border border-emerald-100">
                 <div className="flex items-center gap-1.5">
                   <Check size={16} />
-                  <span>Promo {appliedPromo} applied ({discountPercent}% Off)</span>
+                  <span>Promo {appliedPromo} applied ({discountType === 'percentage' ? `${discountValue}%` : formatPrice(discountValue)} Off)</span>
                 </div>
                 <button
                   onClick={() => {
-                    setDiscountPercent(0);
+                    setDiscountValue(0);
+                    setDiscountType("");
                     setAppliedPromo("");
                   }}
                   className="text-emerald-800 hover:underline"
@@ -241,17 +255,17 @@ export default function Cart() {
             <div className="space-y-3.5 text-sm">
               <div className="flex justify-between text-slate-500 font-medium">
                 <span>Subtotal</span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>{formatPrice(cartTotal)}</span>
               </div>
-              {discountPercent > 0 && (
+              {discountAmount > 0 && (
                 <div className="flex justify-between text-emerald-600 font-semibold">
-                  <span>Discount ({discountPercent}%)</span>
-                  <span>-${discountAmount.toFixed(2)}</span>
+                  <span>Discount ({discountType === 'percentage' ? `${discountValue}%` : 'Fixed'})</span>
+                  <span>-{formatPrice(discountAmount)}</span>
                 </div>
               )}
               <div className="flex justify-between text-slate-500 font-medium">
                 <span>Estimated Tax (8%)</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>{formatPrice(tax)}</span>
               </div>
               <div className="flex justify-between text-slate-500 font-medium">
                 <span>Shipping Cost</span>
@@ -261,19 +275,19 @@ export default function Cart() {
                       {!hasPreviousOrders ? "FREE (1st Order)" : "FREE"}
                     </span>
                   ) : (
-                    `$${shipping.toFixed(2)}`
+                    `${formatPrice(shipping)}`
                   )}
                 </span>
               </div>
               {shipping > 0 && (
                 <p className="text-[10px] text-slate-400 font-semibold">
-                  Add ${(150 - subtotal).toFixed(2)} more to unlock free shipping!
+                  Add {formatPrice(150 - subtotal)} more to unlock free shipping!
                 </p>
               )}
               
               <div className="border-t border-slate-100 pt-4 flex justify-between font-extrabold text-slate-900 text-base">
                 <span>Grand Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>{formatPrice(total)}</span>
               </div>
             </div>
 

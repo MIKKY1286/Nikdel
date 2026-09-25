@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "../context/AuthContext";
+import { useSettings } from "../context/SettingsContext";
 import { ShoppingCart, Star, Check, Plus, Minus, Trash2, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +11,7 @@ export default function ProductCard({ product }) {
   const { addToCart, cart, removeFromCart, updateQuantity } = useCart();
   const { wishlist, toggleWishlist } = useWishlist();
   const { currentUser } = useAuth();
+  const { formatPrice } = useSettings();
   const navigate = useNavigate();
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
@@ -133,10 +135,14 @@ export default function ProductCard({ product }) {
         {/* Price and CTA */}
         <div className="mt-auto pt-4 border-t border-slate-50 flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-xs text-slate-400 font-medium">Price</span>
-            <span className="text-lg font-extrabold text-slate-900">
-              ${parseFloat(product.price).toFixed(2)}
+            <span className="text-xl font-black text-slate-900 leading-none">
+              {formatPrice(product.price)}
             </span>
+            {product.oldPrice && (
+              <span className="text-xs text-slate-400 line-through font-semibold mt-1">
+                {formatPrice(product.oldPrice)}
+              </span>
+            )}
           </div>
 
           {cartItem ? (

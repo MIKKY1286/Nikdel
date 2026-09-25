@@ -124,30 +124,32 @@ export default function AdminCategories() {
                   <h3 className="font-extrabold text-xl">{category.name}</h3>
                   <p className="text-xs font-semibold text-slate-300">{category.productCount} Products</p>
                 </div>
-                <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+              </div>
+              <div className="p-4 flex flex-col gap-3 border-t border-slate-50">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-500">
+                    {category.productCount || 0} Products
+                  </span>
+                  <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                    category.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'
+                  }`}>
+                    {category.status}
+                  </span>
+                </div>
+                <div className="flex items-center justify-end gap-2 border-t border-slate-50 pt-2">
                   <button 
                     onClick={(e) => { e.stopPropagation(); handleOpenForm(category); }} 
-                    className="p-1.5 bg-white/20 backdrop-blur-sm text-white hover:bg-white/40 rounded-lg transition-colors"
+                    className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
                   >
-                    <Edit size={14} />
+                    <Edit size={16} />
                   </button>
                   <button 
                     onClick={(e) => { e.stopPropagation(); handleDelete(category._id || category.id); }} 
-                    className="p-1.5 bg-rose-500/80 backdrop-blur-sm text-white hover:bg-rose-600 rounded-lg transition-colors"
+                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={16} />
                   </button>
                 </div>
-              </div>
-              <div className="p-4 flex items-center justify-between border-t border-slate-50">
-                <span className="text-xs font-semibold text-slate-500">
-                  {category.productCount || 0} Products
-                </span>
-                <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                  category.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'
-                }`}>
-                  {category.status}
-                </span>
               </div>
             </div>
           ))}

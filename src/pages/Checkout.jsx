@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { useSettings } from "../context/SettingsContext";
 import { CreditCard, Truck, ClipboardList, CheckCircle, ArrowRight, Loader } from "lucide-react";
 import paymentService from "../services/payment.service";
 
@@ -10,11 +11,12 @@ const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
 export default function Checkout() {
   const { currentUser } = useAuth();
   const { cart, placeOrder, cartTotal, orders } = useCart();
+  const { formatPrice, currency } = useSettings();
   const location = useLocation();
 
-
   // Read promo discount details from cart page navigation state
-  const discountPercent = location.state?.discountPercent || 0;
+  const discountType = location.state?.discountType || "";
+  const discountValue = location.state?.discountValue || 0;
   const appliedPromo = location.state?.appliedPromo || "";
   const discountAmount = location.state?.discountAmount || 0;
 
@@ -87,7 +89,7 @@ export default function Checkout() {
       PAYSTACK_PUBLIC_KEY.trim() !== ""
     ) {
       try {
-        const conversionRate = 1600; // 1 USD = 1600 NGN
+        const conversionRate = currency === "NGN" ? 1 : 1600; // if not NGN, convert to NGN
         const amountInKobo = Math.round(total * conversionRate * 100);
         
         // Initialize payment on backend
@@ -157,7 +159,7 @@ export default function Checkout() {
           </div>
           <div className="flex justify-between font-extrabold text-slate-950 border-t border-slate-200/50 pt-3">
             <span className="text-sm">Paid Amount</span>
-            <span className="text-sm">${successOrder.total.toFixed(2)}</span>
+            <span className="text-sm">{formatPrice(successOrder.total)}</span>
           </div>
         </div>
 
@@ -303,7 +305,7 @@ export default function Checkout() {
               <label htmlFor="paystack-option" className="cursor-pointer select-none">
                 <span className="font-bold text-slate-900 text-sm block">Paystack Secure Checkout</span>
                 <span className="text-xs text-slate-400 mt-1 block leading-relaxed">
-                  Pay securely using Credit/Debit card, Bank, USSD, or Mobile Money. Amount will be processed in NGN (Rate: 1 USD = 1,600 NGN).
+                  Pay securely using Credit/Debit card, Bank, USSD, or Mobile Money. Amount will be processed in NGN{currency !== 'NGN' && ` (Rate: 1 ${currency} = 1,600 NGN)`}.
                 </span>
               </label>
             </div>
@@ -333,7 +335,7 @@ export default function Checkout() {
                   <span className="text-slate-400">x{item.quantity || 1}</span>
                 </div>
                 <span className="font-semibold text-slate-800 shrink-0">
-                  ${(item.price * (item.quantity || 1)).toFixed(2)}
+                  {formatPrice(item.price * (item.quantity || 1))}
                 </span>
               </div>
             ))}
@@ -343,17 +345,17 @@ export default function Checkout() {
           <div className="border-t border-slate-100 pt-4 space-y-3.5 text-xs text-slate-650 font-medium">
             <div className="flex justify-between">
               <span>Cart Subtotal</span>
-              <span>${cartTotal.toFixed(2)}</span>
+              <span>{formatPrice(cartTotal)}</span>
             </div>
-            {discountPercent > 0 && (
+            {discountAmount > 0 && (
               <div className="flex justify-between text-emerald-600 font-semibold">
                 <span>Promo Discount</span>
-                <span>-${discountAmount.toFixed(2)}</span>
+                <span>-{formatPrice(discountAmount)}</span>
               </div>
             )}
             <div className="flex justify-between">
               <span>Sales Tax (8%)</span>
-              <span>${tax.toFixed(2)}</span>
+              <span>{formatPrice(tax)}</span>
             </div>
             <div className="flex justify-between">
               <span>Shipping Fee</span>
@@ -363,13 +365,13 @@ export default function Checkout() {
                     {!hasPreviousOrders ? "FREE (1st Order)" : "FREE"}
                   </span>
                 ) : (
-                  `$${shipping.toFixed(2)}`
+                  `${formatPrice(shipping)}`
                 )}
               </span>
             </div>
             <div className="flex justify-between text-slate-900 font-extrabold text-sm border-t border-slate-100 pt-4">
               <span>Total Price</span>
-              <span>${total.toFixed(2)}</span>
+              <span>{formatPrice(total)}</span>
             </div>
           </div>
 

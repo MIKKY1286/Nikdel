@@ -22,7 +22,7 @@ const productService = {
 
   // Update a product (Admin)
   updateProduct: async (id, productData) => {
-    const response = await api.put(`/products/${id}`, productData);
+    const response = await api.patch(`/products/${id}`, productData);
     return response.data;
   },
 

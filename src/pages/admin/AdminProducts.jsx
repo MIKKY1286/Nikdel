@@ -146,7 +146,6 @@ export default function AdminProducts() {
                         <img src={product.images?.[0] || product.image || 'https://via.placeholder.com/150'} alt={product.name} className="w-10 h-10 rounded-lg object-cover border border-slate-200" />
                         <div>
                           <p className="font-bold text-slate-800">{product.name}</p>
-                          <p className="text-xs text-slate-400 font-mono">{product._id || product.id}</p>
                         </div>
                       </div>
                     </td>
@@ -164,7 +163,7 @@ export default function AdminProducts() {
                         'bg-amber-50 text-amber-700 border border-amber-100'
                       }`}>
                         {(product.status || 'draft').replace('_', ' ')}
-                      </span>
+                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">

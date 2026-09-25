@@ -6,12 +6,14 @@ import ProductCard from "../components/ProductCard";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
+import { useSettings } from "../context/SettingsContext";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const { currentUser } = useAuth();
   const { addToCart, cart, updateQuantity, removeFromCart } = useCart();
   const { showToast } = useToast();
+  const { formatPrice } = useSettings();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,6 +22,7 @@ export default function ProductDetail() {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [adding, setAdding] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ days: 81, hours: 6, mins: 50, secs: 2 });
+  const [selectedImage, setSelectedImage] = useState(0);
 
   useEffect(() => {
     // Fetch product details
@@ -140,14 +143,28 @@ export default function ProductDetail() {
                 ORGANIC
               </span>
             </div>
-            <img src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : (product.image || 'https://via.placeholder.com/500')} alt={product.name} className="w-full max-w-md object-contain aspect-square mix-blend-multiply" />
+            {(() => {
+              const productImages = Array.isArray(product.images) && product.images.length > 0 
+                ? product.images 
+                : (product.image ? [product.image] : ['https://via.placeholder.com/500']);
+              
+              return (
+                <img src={productImages[selectedImage] || productImages[0]} alt={product.name} className="w-full max-w-md object-contain aspect-square mix-blend-multiply" />
+              );
+            })()}
           </div>
           <div className="flex gap-4 overflow-x-auto pb-2">
-            {[1,2,3].map((thumb, idx) => (
-              <div key={idx} className={`w-20 h-20 shrink-0 border-2 rounded-xl p-2 cursor-pointer ${idx === 0 ? 'border-brand-500' : 'border-slate-100'}`}>
-                <img src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : (product.image || 'https://via.placeholder.com/150')} alt="" className="w-full h-full object-contain mix-blend-multiply" />
-              </div>
-            ))}
+            {(() => {
+              const productImages = Array.isArray(product.images) && product.images.length > 0 
+                ? product.images 
+                : (product.image ? [product.image] : ['https://via.placeholder.com/150']);
+              
+              return productImages.map((thumb, idx) => (
+                <div key={idx} onClick={() => setSelectedImage(idx)} className={`w-20 h-20 shrink-0 border-2 rounded-xl p-2 cursor-pointer transition-colors ${idx === selectedImage ? 'border-brand-500' : 'border-slate-100 hover:border-slate-300'}`}>
+                  <img src={thumb} alt="" className="w-full h-full object-contain mix-blend-multiply" />
+                </div>
+              ));
+            })()}
           </div>
         </div>
 
@@ -172,14 +189,13 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          <p className="text-sm text-slate-600 leading-relaxed">
-            Vivamus adipiscing nisl ut dolor dignissim semper. Nulla luctus malesuada tincidunt. Class aptent taciti
-            sociosqu ad litora torquent Vivamus adipiscing nisl ut dolor dignissim semper.
+          <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+            {product.shortDescription || product.description?.substring(0, 150) + "..." || "No description available."}
           </p>
 
           <div className="flex items-end gap-3">
-            <span className="text-4xl font-extrabold text-red-600">${(product.price || 0).toFixed(2)}</span>
-            <span className="text-lg text-slate-400 line-through font-semibold mb-1">${((product.price || 0) * 1.5).toFixed(2)}</span>
+            <span className="text-4xl font-extrabold text-red-600">{formatPrice(product.price || 0)}</span>
+            <span className="text-lg text-slate-400 line-through font-semibold mb-1">{formatPrice((product.price || 0) * 1.5)}</span>
           </div>
 
           <div>
@@ -292,8 +308,7 @@ export default function ProductDetail() {
         <div className="py-8 text-sm text-slate-600 leading-relaxed space-y-4">
           {activeTab === "description" ? (
             <>
-              <p>Quisque varius diam vel metus mattis, id aliquam diam rhoncus. Proin vitae magna in dui finibus malesuada et at nulla. Morbi elit ex, viverra vitae ante vel, blandit feugiat ligula. Fusce fermentum iaculis nibh, at sodales leo maximus a. Nullam ultricies sodales nunc, in pellentesque lorem mattis quis. Cras imperdiet est in nunc tristique lacinia. Nullam aliquam mauris eu accumsan tincidunt. Suspendisse velit ex, aliquet vel ornare vel, dignissim a tortor.</p>
-              <p>Morbi ut sapien vitae odio accumsan gravida. Morbi vitae erat auctor, eleifend nunc a, lobortis neque. Praesent aliquam dignissim viverra. Maecenas lacus odio, feugiat eu nunc sit amet, maximus sagittis dolor. Vivamus nisi sapien, elementum sit amet eros sit amet, ultricies cursus ipsum. Sed consequat luctus ligula. Curabitur laoreet rhoncus blandit. Aenean vel diam ut arcu pharetra dignissim ut sed leo. Vivamus faucibus, ipsum in vestibulum vulputate, lorem orci convallis quam, sit amet consequat nulla felis pharetra lacus. Duis semper erat mauris, sed egestas purus commodo vel.</p>
+              <p className="whitespace-pre-line">{product.description || "No detailed description available for this product."}</p>
             </>
           ) : (
             <p>No reviews yet.</p>

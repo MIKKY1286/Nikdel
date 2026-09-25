@@ -5,7 +5,7 @@ import { useToast } from "../context/ToastContext";
 import { Lock, Mail, Loader, Eye, EyeOff } from "lucide-react";
 
 export default function Login({ isAdmin = false }) {
-  const { login, loginWithGoogle, resetPassword } = useAuth();
+  const { login, loginWithGoogle, forgotPassword } = useAuth();
   const { showToast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -71,7 +71,7 @@ export default function Login({ isAdmin = false }) {
     setError("");
     setLoading(true);
     try {
-      await resetPassword(email);
+      await forgotPassword(email);
       showToast("Password reset email sent! Check your inbox.", "success");
     } catch (err) {
       console.error(err);
@@ -96,7 +96,7 @@ export default function Login({ isAdmin = false }) {
             alt="Nikdel Logo" 
             className="w-10 h-10 rounded-xl object-cover border border-brand-500/30" 
           />
-          <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-brand-300 to-brand-100 bg-clip-text text-transparent">
+          <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-brand-300 to-brand-100 bg-clip-text text-trans ent">
             Nikdel {isActuallyAdmin && "Admin"}
           </span>
         </div>

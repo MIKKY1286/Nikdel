@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { ToastProvider } from "./context/ToastContext";
 import { WishlistProvider } from "./context/WishlistContext";
+import { SettingsProvider } from "./context/SettingsContext";
 
 // Components
 import Header from "./components/Header";
@@ -20,6 +21,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import ProductDetail from "./pages/ProductDetail";
 import UserSettings from "./pages/UserSettings";
+import ResetPassword from "./pages/ResetPassword";
 import AccountLayout from "./layouts/AccountLayout";
 import AccountPlaceholder from "./pages/AccountPlaceholder";
 import Blog from "./pages/Blog";
@@ -97,6 +99,7 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
+      <SettingsProvider>
       <ToastProvider>
         <AuthProvider>
           <CartProvider>
@@ -137,6 +140,7 @@ function App() {
               <Route element={<AuthLayout />}>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/admin/login" element={<Login isAdmin={true} />} />
                 <Route path="/admin/signup" element={<SignUp isAdmin={true} />} />
               </Route>
@@ -162,6 +166,7 @@ function App() {
           </CartProvider>
         </AuthProvider>
       </ToastProvider>
+      </SettingsProvider>
     </Router>
   );
 }

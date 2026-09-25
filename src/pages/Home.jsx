@@ -111,9 +111,14 @@ export default function Home() {
       try {
         const response = await productService.getAllProducts({ limit: 12 });
         const data = response.products || response.data || response || [];
+        const shuffled = [...data];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
         
-        setNewArrivals(data.slice(0, 4));
-        setBestSelling(data.length > 2 ? [data[1], data[2], data[0], data[3]].filter(Boolean) : data.slice(0,4));
+        setNewArrivals(shuffled.slice(0, 4));
+        setBestSelling(shuffled.slice(4, 8));
       } catch (err) {
         console.error("Error fetching featured products:", err);
         setError("Could not load featured products. Please try again.");

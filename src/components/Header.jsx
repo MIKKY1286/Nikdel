@@ -14,9 +14,12 @@ import {
   ChevronDown
 } from "lucide-react";
 
+import { useSettings } from "../context/SettingsContext";
+
 export default function Header() {
   const { currentUser, logout } = useAuth();
   const { cartItemCount } = useCart();
+  const { settings } = useSettings();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
@@ -35,6 +38,11 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-slate-100 shadow-sm">
+      {settings?.maintenanceMode && (
+        <div className="bg-amber-500 text-white text-center py-2 px-4 text-xs sm:text-sm font-bold flex justify-center items-center gap-2">
+          <span>⚠️ Site is currently undergoing maintenance. Checkout is disabled for safety.</span>
+        </div>
+      )}
       {/* Top Row: Logo, Search, Icons */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 gap-8">

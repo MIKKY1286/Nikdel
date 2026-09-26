@@ -11,7 +11,7 @@ const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
 export default function Checkout() {
   const { currentUser } = useAuth();
   const { cart, placeOrder, cartTotal, orders } = useCart();
-  const { formatPrice, currency } = useSettings();
+  const { formatPrice, currency, settings, exchangeRates } = useSettings();
   const location = useLocation();
 
   // Read promo discount details from cart page navigation state
@@ -89,8 +89,8 @@ export default function Checkout() {
       PAYSTACK_PUBLIC_KEY.trim() !== ""
     ) {
       try {
-        const conversionRate = currency === "NGN" ? 1 : 1600; // if not NGN, convert to NGN
-        const amountInKobo = Math.round(total * conversionRate * 100);
+        const liveNgnRate = (exchangeRates && exchangeRates["NGN"]) ? exchangeRates["NGN"] : 1600;
+        const amountInKobo = Math.round(total * liveNgnRate * 100);
         
         // Initialize payment on backend
         const emailToUse = currentUser?.email || "customer@nikdel.com";
@@ -305,7 +305,7 @@ export default function Checkout() {
               <label htmlFor="paystack-option" className="cursor-pointer select-none">
                 <span className="font-bold text-slate-900 text-sm block">Paystack Secure Checkout</span>
                 <span className="text-xs text-slate-400 mt-1 block leading-relaxed">
-                  Pay securely using Credit/Debit card, Bank, USSD, or Mobile Money. Amount will be processed in NGN{currency !== 'NGN' && ` (Rate: 1 ${currency} = 1,600 NGN)`}.
+                  Pay securely using Credit/Debit card, Bank, USSD, or Mobile Money. Amount will be processed in NGN (Rate: 1 USD = {exchangeRates?.NGN ? Math.round(exchangeRates.NGN) : 1600} NGN).
                 </span>
               </label>
             </div>
@@ -375,23 +375,29 @@ export default function Checkout() {
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={processing}
-            className="w-full inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-500 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-brand-500/20 group disabled:bg-slate-400 disabled:shadow-none"
-          >
-            {processing ? (
-              <>
-                <Loader size={18} className="animate-spin" />
-                Processing Payment...
-              </>
-            ) : (
-              <>
-                Confirm & Place Order
-                <ArrowRight size={16} className="transform transition-transform group-hover:translate-x-0.5" />
-              </>
-            )}
-          </button>
+          {settings?.maintenanceMode ? (
+            <div className="w-full text-center p-4 bg-amber-50 text-amber-600 rounded-xl font-bold border border-amber-200">
+              Checkout is temporarily disabled for maintenance.
+            </div>
+          ) : (
+            <button
+              type="submit"
+              disabled={processing}
+              className="w-full inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-500 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-brand-500/20 group disabled:bg-slate-400 disabled:shadow-none"
+            >
+              {processing ? (
+                <>
+                  <Loader size={18} className="animate-spin" />
+                  Processing Payment...
+                </>
+              ) : (
+                <>
+                  Confirm & Place Order
+                  <ArrowRight size={16} className="transform transition-transform group-hover:translate-x-0.5" />
+                </>
+              )}
+            </button>
+          )}
         </div>
       </form>
     </div>

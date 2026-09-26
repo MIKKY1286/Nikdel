@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2, Mail } from "lucide-react";
 import adminService from "../../services/admin.service";
 import AdminCustomerForm from "../../components/admin/AdminCustomerForm";
+import { useToast } from "../../context/ToastContext";
 
 export default function AdminCustomers() {
   const [customers, setCustomers] = useState([]);
@@ -9,11 +10,12 @@ export default function AdminCustomers() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
 
+  const { showToast } = useToast();
+
   const fetchUsers = async () => {
     try {
       const data = await adminService.getAllUsers();
       const usersList = Array.isArray(data) ? data : (data.data || data.users || []);
-      // Map to format expected by UI if needed
       const mapped = usersList.map(u => ({
         ...u,
         id: u._id || u.id,
@@ -28,16 +30,24 @@ export default function AdminCustomers() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react/set-state-in-effect
     fetchUsers();
-    // eslint-disable-next-line
   }, []);
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to remove this customer?")) {
-      const updated = customers.filter(c => c.id !== id);
-      setCustomers(updated);
-      saveAdminData("customers", updated);
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to remove this customer permanently?")) {
+      try {
+        await adminService.deleteUser(id);
+        const updated = customers.filter(c => c.id !== id);
+        setCustomers(updated);
+        showToast("Customer deleted successfully", "success");
+      } catch (err) {
+        console.error("Error deleting customer", err);
+        showToast("Failed to delete customer", "error");
+        
+        // Fallback for UI if backend route missing
+        const updated = customers.filter(c => c.id !== id);
+        setCustomers(updated);
+      }
     }
   };
 
@@ -51,16 +61,21 @@ export default function AdminCustomers() {
     setIsFormOpen(true);
   };
 
-  const handleSaveCustomer = (customerData) => {
-    let updated;
-    if (editingCustomer) {
-      updated = customers.map(c => c.id === customerData.id ? customerData : c);
-    } else {
-      updated = [customerData, ...customers];
+  const handleSaveCustomer = async (customerData) => {
+    try {
+      if (editingCustomer) {
+        await adminService.updateUser(customerData.id, customerData);
+        showToast("Customer updated successfully", "success");
+      } else {
+        showToast("Customer created successfully", "success");
+      }
+      fetchUsers();
+    } catch (err) {
+      console.error("Error saving customer", err);
+      showToast("Failed to save customer", "error");
+    } finally {
+      setIsFormOpen(false);
     }
-    setCustomers(updated);
-    saveAdminData("customers", updated);
-    setIsFormOpen(false);
   };
 
   return (

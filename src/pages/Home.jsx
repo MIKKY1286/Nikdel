@@ -130,10 +130,10 @@ export default function Home() {
   }, []);
 
   const categories = [
-    { name: "Power Tools", query: "power-hand-tools", icon: Wrench, color: "bg-blue-50 text-blue-600 border-blue-100" },
+    { name: "Power Tools", query: "power-and-hand-tools", icon: Wrench, color: "bg-blue-50 text-blue-600 border-blue-100" },
     { name: "Building Materials", query: "building-materials", icon: HardHat, color: "bg-orange-50 text-orange-600 border-orange-100" },
     { name: "Agriculture", query: "agricultural-tools", icon: Tractor, color: "bg-emerald-50 text-emerald-600 border-emerald-100" },
-    { name: "Paints & Finishes", query: "paints-finishes", icon: PaintBucket, color: "bg-purple-50 text-purple-600 border-purple-100" }
+    { name: "Paints & Finishes", query: "paints-and-finishes", icon: PaintBucket, color: "bg-purple-50 text-purple-600 border-purple-100" }
   ];
 
   return (
@@ -154,7 +154,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col text-[13px] text-slate-700">
               {['Power & Hand Tools', 'Building Materials', 'Paints & Finishes', 'Plumbing & Electrical', 'Hardware & Fasteners', 'Upholstery & Furniture Fittings', 'Agricultural Tools', 'Farm Chemicals & Insecticides', 'Doors, Windows & Flooring', 'Canopies & Tents'].map((item, idx) => (
-                <Link key={idx} to={`/shop?category=${item.toLowerCase().replace(/ & /g, '-').replace(/, /g, '-').replace(/ /g, '-')}`} className="px-5 py-3 border-b border-slate-100 hover:text-brand-600 flex items-center justify-between transition-colors font-medium">
+                <Link key={idx} to={`/shop?category=${item.toLowerCase().replace(/ & /g, ' and ').replace(/,/g, '').replace(/\s+/g, '-')}`} className="px-5 py-3 border-b border-slate-100 hover:text-brand-600 flex items-center justify-between transition-colors font-medium">
                   <div className="flex items-center gap-3">
                     {/* Minimal placeholder icons matching the mockup style */}
                     <div className="w-4 h-4 rounded-full border border-slate-300 opacity-60"></div>
@@ -243,7 +243,7 @@ export default function Home() {
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Link to="/shop?category=power-tools" className="relative h-48 sm:h-64 rounded-2xl overflow-hidden group">
+          <Link to="/shop?category=power-and-hand-tools" className="relative h-48 sm:h-64 rounded-2xl overflow-hidden group">
             <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&q=80&w=800" alt="Power Tools" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 to-transparent"></div>
             <div className="absolute inset-0 p-8 flex flex-col justify-center text-white">
@@ -252,7 +252,7 @@ export default function Home() {
               <span className="text-sm font-semibold underline underline-offset-4">Shop Now</span>
             </div>
           </Link>
-          <Link to="/shop?category=agriculture" className="relative h-48 sm:h-64 rounded-2xl overflow-hidden group">
+          <Link to="/shop?category=agricultural-tools" className="relative h-48 sm:h-64 rounded-2xl overflow-hidden group">
             <img src="https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&q=80&w=800" alt="Agriculture" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             <div className="absolute inset-0 bg-gradient-to-r from-brand-900/80 to-transparent"></div>
             <div className="absolute inset-0 p-8 flex flex-col justify-center text-white">

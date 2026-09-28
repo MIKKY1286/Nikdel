@@ -31,6 +31,18 @@ const productService = {
     const response = await api.delete(`/products/${id}`);
     return response.data;
   },
+
+  // Get product reviews
+  getProductReviews: async (productId) => {
+    const response = await api.get(`/products/${productId}/reviews`);
+    return response.data;
+  },
+
+  // Add a product review
+  addProductReview: async (productId, reviewData) => {
+    const response = await api.post(`/products/${productId}/reviews`, reviewData);
+    return response.data;
+  },
 };
 
 export default productService;

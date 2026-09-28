@@ -48,7 +48,13 @@ export function SettingsProvider({ children }) {
         emailAlertsStock: newSettings.emailAlertsStock ?? true,
         twoFactorAuth: newSettings.twoFactorAuth ?? false,
         stripeKey: newSettings.stripeKey || '',
-        taxRate: newSettings.taxRate || 0
+        taxRate: newSettings.taxRate || 0,
+        promoTitle: newSettings.promoTitle || '',
+        promoDesc: newSettings.promoDesc || '',
+        promoButtonText: newSettings.promoButtonText || '',
+        promoLink: newSettings.promoLink || '',
+        promoImage: newSettings.promoImage || '',
+        promoEnabled: newSettings.promoEnabled ?? false
       };
       
       localStorage.setItem('nikdel_extended_settings', JSON.stringify(extendedPayload));

@@ -134,7 +134,7 @@ export default function AdminOrders() {
           <ShoppingBag size={44} className="text-slate-300 mx-auto" />
           <h3 className="font-bold text-slate-800 text-base">No orders matched criteria</h3>
           <p className="text-xs text-slate-400 max-w-xs mx-auto">
-            Try adjusting your search criteria, clearing filter settings, or seeding mock demo orders above.
+            Try adjusting your search criteria or clearing filter settings.
           </p>
         </div>
       ) : (

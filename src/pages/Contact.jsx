@@ -1,13 +1,39 @@
-import React, { useState } from "react";
-import { MapPin, Phone, Mail, Send } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { MapPin, Phone, Mail, Send, Loader } from "lucide-react";
+import emailjs from '@emailjs/browser';
+import { useToast } from "../context/ToastContext";
 
 export default function Contact() {
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const form = useRef();
+  const { showToast } = useToast();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSent(true);
-    setTimeout(() => setSent(false), 3000);
+    setLoading(true);
+
+    const serviceId = "service_ap0twre";
+    const templateId = "template_he9wyin";
+    const publicKey = "kB2hGEEEYAYTlYaKb";
+
+    emailjs.sendForm(serviceId, templateId, form.current, {
+      publicKey: publicKey,
+    })
+    .then(
+      () => {
+        setSent(true);
+        setLoading(false);
+        showToast("Message sent successfully!", "success");
+        setTimeout(() => setSent(false), 5000);
+        form.current.reset();
+      },
+      (error) => {
+        setLoading(false);
+        console.error('FAILED...', error.text);
+        showToast("Failed to send message. Please try again.", "error");
+      },
+    );
   };
 
   return (
@@ -50,28 +76,28 @@ export default function Contact() {
             Thank you for reaching out! Your message has been sent successfully.
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form ref={form} onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700">Full Name</label>
-                <input type="text" required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all" />
+                <input type="text" name="user_name" required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all" />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700">Email Address</label>
-                <input type="email" required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all" />
+                <input type="email" name="user_email" required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all" />
               </div>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-700">Subject</label>
-              <input type="text" required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all" />
+              <input type="text" name="subject" required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all" />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-700">Message</label>
-              <textarea required rows="5" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"></textarea>
+              <textarea name="message" required rows="5" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"></textarea>
             </div>
-            <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md">
-              <Send size={18} />
-              Send Message
+            <button type="submit" disabled={loading} className="w-full bg-brand-600 hover:bg-brand-700 disabled:bg-brand-400 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md">
+              {loading ? <Loader size={18} className="animate-spin" /> : <Send size={18} />}
+              {loading ? "Sending..." : "Send Message"}
             </button>
           </form>
         )}

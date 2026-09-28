@@ -51,8 +51,8 @@ export default function Trending() {
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {products.map(product => (
-            <ProductCard key={product._id || product.id || Math.random()} product={product} />
+          {products.map((product, index) => (
+            <ProductCard key={product._id || product.id || index} product={product} />
           ))}
         </div>
       )}

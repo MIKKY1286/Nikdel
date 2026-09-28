@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Save, User, Bell, Shield, Globe, CreditCard, Activity, Loader } from "lucide-react";
+import { Save, User, Bell, Shield, Globe, CreditCard, Activity, Loader, Megaphone } from "lucide-react";
 import { useSettings } from "../../context/SettingsContext";
 import { useToast } from "../../context/ToastContext";
 
@@ -22,7 +22,12 @@ export default function AdminSettings() {
     twoFactorAuth: false,
     stripeKey: "",
     taxRate: 0,
-    maintenanceMode: false
+    maintenanceMode: false,
+    promoTitle: "",
+    promoDesc: "",
+    promoButtonText: "",
+    promoLink: "",
+    promoEnabled: false
   });
 
   useEffect(() => {
@@ -40,7 +45,12 @@ export default function AdminSettings() {
         twoFactorAuth: settings.twoFactorAuth ?? false,
         stripeKey: settings.stripeKey || "",
         taxRate: settings.taxRate || 0,
-        maintenanceMode: settings.maintenanceMode ?? false
+        maintenanceMode: settings.maintenanceMode ?? false,
+        promoTitle: settings.promoTitle || "",
+        promoDesc: settings.promoDesc || "",
+        promoButtonText: settings.promoButtonText || "",
+        promoLink: settings.promoLink || "",
+        promoEnabled: settings.promoEnabled ?? false
       });
     }
   }, [settings]);
@@ -70,6 +80,7 @@ export default function AdminSettings() {
     { id: "notifications", label: "Notifications", icon: <Bell size={18} /> },
     { id: "security", label: "Security", icon: <Shield size={18} /> },
     { id: "billing", label: "Billing", icon: <CreditCard size={18} /> },
+    { id: "promotions", label: "Promotions", icon: <Megaphone size={18} /> },
     { id: "system", label: "System", icon: <Activity size={18} /> },
   ];
 
@@ -267,6 +278,43 @@ export default function AdminSettings() {
                       </span>
                     </div>
                   </label>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "promotions" && (
+            <div className="bg-white border border-slate-100 rounded-2xl p-6 md:p-8 shadow-sm space-y-8 animate-fade-in">
+              <div>
+                <h3 className="text-xl font-extrabold text-slate-900 mb-4">Promotional Banner (Secondary)</h3>
+                <p className="text-sm text-slate-500 mb-6">This banner is displayed on the homepage when a user has already claimed the initial welcome voucher.</p>
+                <div className="space-y-6">
+                  <label className="flex items-center gap-4 p-4 border border-slate-100 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors mb-4">
+                    <input type="checkbox" name="promoEnabled" checked={formData.promoEnabled} onChange={handleChange} className="w-5 h-5 text-brand-600 rounded focus:ring-brand-500" />
+                    <div>
+                      <span className="block font-bold text-slate-800">Enable Promotional Banner</span>
+                      <span className="block text-xs text-slate-500">Show this secondary promotional banner on the homepage.</span>
+                    </div>
+                  </label>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Promo Title</label>
+                      <input type="text" name="promoTitle" placeholder="e.g. Special Holiday Sale" value={formData.promoTitle} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Promo Button Text</label>
+                      <input type="text" name="promoButtonText" placeholder="e.g. Shop the Sale" value={formData.promoButtonText} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Promo Description</label>
+                      <textarea rows="2" name="promoDesc" placeholder="e.g. Get up to 50% off select items." value={formData.promoDesc} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all resize-none"></textarea>
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Button Link (URL path)</label>
+                      <input type="text" name="promoLink" placeholder="e.g. /shop?category=sale" value={formData.promoLink} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

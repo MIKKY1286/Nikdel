@@ -9,7 +9,7 @@ import { Trash2, ShoppingBag, Plus, Minus, ArrowRight, Ticket, Check } from "luc
 export default function Cart() {
   const { currentUser } = useAuth();
   const { cart, removeFromCart, updateQuantity, cartTotal, orders } = useCart();
-  const { formatPrice, currency } = useSettings();
+  const { formatPrice } = useSettings();
   const navigate = useNavigate();
 
   // Promo code states

@@ -10,6 +10,7 @@ import { SettingsProvider } from "./context/SettingsContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
+import InstallPrompt from "./components/InstallPrompt";
 
 // Pages
 import Home from "./pages/Home";
@@ -23,9 +24,10 @@ import ProductDetail from "./pages/ProductDetail";
 import UserSettings from "./pages/UserSettings";
 import ResetPassword from "./pages/ResetPassword";
 import AccountLayout from "./layouts/AccountLayout";
-import AccountPlaceholder from "./pages/AccountPlaceholder";
+// AccountPlaceholder removed
 import Addresses from "./pages/Addresses";
 import Blog from "./pages/Blog";
+import BlogPostDetail from "./pages/BlogPostDetail";
 import Contact from "./pages/Contact";
 import Trending from "./pages/Trending";
 import Sale from "./pages/Sale";
@@ -43,8 +45,8 @@ import AdminCategories from "./pages/admin/AdminCategories";
 import AdminCustomers from "./pages/admin/AdminCustomers";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminReports from "./pages/admin/AdminReports";
-import AdminKnowledgeBase from "./pages/admin/AdminKnowledgeBase";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminBlog from "./pages/admin/AdminBlog";
 
 // Layout components
 import { useLocation } from "react-router-dom";
@@ -115,6 +117,7 @@ function App() {
                 
                 {/* New Pages */}
                 <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPostDetail />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/trending" element={<Trending />} />
                 <Route path="/sale" element={<Sale />} />
@@ -126,13 +129,10 @@ function App() {
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/orders" element={<Orders />} />
                   <Route path="/account" element={<AccountLayout />}>
-                    <Route index element={<AccountPlaceholder title="Dashboard" />} />
+                    <Route index element={<Navigate to="orders" replace />} />
                     <Route path="settings" element={<UserSettings />} />
                     <Route path="wishlist" element={<Wishlist />} />
-                    <Route path="downloads" element={<AccountPlaceholder title="Downloads" />} />
                     <Route path="addresses" element={<Addresses />} />
-                    <Route path="details" element={<AccountPlaceholder title="Account Details" />} />
-                    <Route path="compare" element={<AccountPlaceholder title="Compare Products" />} />
                   </Route>
                 </Route>
               </Route>
@@ -159,7 +159,7 @@ function App() {
                 <Route path="customers" element={<AdminCustomers />} />
                 <Route path="reports" element={<AdminReports />} />
                 <Route path="coupons" element={<AdminCoupons />} />
-                <Route path="knowledge-base" element={<AdminKnowledgeBase />} />
+                <Route path="blog" element={<AdminBlog />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
               </Routes>
@@ -168,6 +168,7 @@ function App() {
         </AuthProvider>
       </ToastProvider>
       </SettingsProvider>
+      <InstallPrompt />
     </Router>
   );
 }

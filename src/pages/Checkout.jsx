@@ -11,12 +11,10 @@ const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
 export default function Checkout() {
   const { currentUser } = useAuth();
   const { cart, placeOrder, cartTotal, orders } = useCart();
-  const { formatPrice, currency, settings, exchangeRates } = useSettings();
+  const { formatPrice, settings, exchangeRates } = useSettings();
   const location = useLocation();
 
   // Read promo discount details from cart page navigation state
-  const discountType = location.state?.discountType || "";
-  const discountValue = location.state?.discountValue || 0;
   const appliedPromo = location.state?.appliedPromo || "";
   const discountAmount = location.state?.discountAmount || 0;
 
@@ -154,8 +152,16 @@ export default function Checkout() {
           currency: "NGN",
           ref: reference || "ref_" + Date.now(),
           access_code: accessCode,
-          onSuccess: (response) => {
-            handlePaymentSuccess(order);
+          onSuccess: async (response) => {
+            try {
+              // Call the backend to verify the payment synchronously (crucial for localhost where webhooks fail)
+              await paymentService.verifyPayment(response.reference);
+              handlePaymentSuccess(order);
+            } catch (err) {
+              console.error(err);
+              setError("Payment verification failed. If you were debited, please contact support.");
+              setProcessing(false);
+            }
           },
           onCancel: () => {
             setProcessing(false);

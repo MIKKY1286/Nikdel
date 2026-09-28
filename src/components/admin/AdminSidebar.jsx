@@ -7,9 +7,9 @@ import {
   Tags, 
   Users, 
   BarChart2, 
-  Ticket, 
-  BookOpen, 
-  Settings
+  Ticket,
+  Settings,
+  FileText
 } from "lucide-react";
 
 export default function AdminSidebar() {
@@ -21,7 +21,7 @@ export default function AdminSidebar() {
     { name: "Customers", path: "/admin/customers", icon: Users },
     { name: "Reports", path: "/admin/reports", icon: BarChart2 },
     { name: "Coupons", path: "/admin/coupons", icon: Ticket },
-    { name: "Knowledge Base", path: "/admin/knowledge-base", icon: BookOpen },
+    { name: "Blog", path: "/admin/blog", icon: FileText },
   ];
 
   return (

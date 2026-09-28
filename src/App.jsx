@@ -24,6 +24,7 @@ import UserSettings from "./pages/UserSettings";
 import ResetPassword from "./pages/ResetPassword";
 import AccountLayout from "./layouts/AccountLayout";
 import AccountPlaceholder from "./pages/AccountPlaceholder";
+import Addresses from "./pages/Addresses";
 import Blog from "./pages/Blog";
 import Contact from "./pages/Contact";
 import Trending from "./pages/Trending";
@@ -129,7 +130,7 @@ function App() {
                     <Route path="settings" element={<UserSettings />} />
                     <Route path="wishlist" element={<Wishlist />} />
                     <Route path="downloads" element={<AccountPlaceholder title="Downloads" />} />
-                    <Route path="addresses" element={<AccountPlaceholder title="Addresses" />} />
+                    <Route path="addresses" element={<Addresses />} />
                     <Route path="details" element={<AccountPlaceholder title="Account Details" />} />
                     <Route path="compare" element={<AccountPlaceholder title="Compare Products" />} />
                   </Route>

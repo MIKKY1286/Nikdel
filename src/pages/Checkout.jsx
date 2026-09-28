@@ -21,13 +21,34 @@ export default function Checkout() {
   const discountAmount = location.state?.discountAmount || 0;
 
   // Form states
-  const [shippingDetails, setShippingDetails] = useState({
-    fullName: "",
-    address: "",
-    city: "",
-    zipCode: "",
-    country: "",
-    phone: "",
+  const [shippingDetails, setShippingDetails] = useState(() => {
+    if (currentUser?.addresses?.length > 0) {
+      const defaultAddr = currentUser.addresses.find(a => a.isDefault) || currentUser.addresses[0];
+      return {
+        fullName: defaultAddr.fullName || currentUser.name || "",
+        address: defaultAddr.street || "",
+        city: defaultAddr.city || "",
+        zipCode: defaultAddr.zipCode || "",
+        country: defaultAddr.country || "",
+        phone: defaultAddr.phone || "",
+      };
+    }
+    return {
+      fullName: currentUser?.name || "",
+      address: "",
+      city: "",
+      zipCode: "",
+      country: "",
+      phone: currentUser?.phone || "",
+    };
+  });
+
+  const [selectedAddressId, setSelectedAddressId] = useState(() => {
+    if (currentUser?.addresses?.length > 0) {
+      const defaultAddr = currentUser.addresses.find(a => a.isDefault) || currentUser.addresses[0];
+      return defaultAddr._id;
+    }
+    return "new";
   });
 
   // Flow states
@@ -60,22 +81,39 @@ export default function Checkout() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setShippingDetails((prev) => ({ ...prev, [name]: value }));
+    if (selectedAddressId !== "new") setSelectedAddressId("new");
   };
 
-  const handleOrderPlacement = async (paymentRef) => {
-    try {
-      const order = await placeOrder(shippingDetails, paymentRef, discountAmount, appliedPromo);
-      if (order) {
-        setSuccessOrder(order);
-      } else {
-        throw new Error("Unable to place order. Try again.");
+  const handleAddressSelect = (e) => {
+    const id = e.target.value;
+    setSelectedAddressId(id);
+    if (id === "new") {
+      setShippingDetails({
+        fullName: currentUser?.name || "",
+        address: "",
+        city: "",
+        zipCode: "",
+        country: "",
+        phone: currentUser?.phone || "",
+      });
+    } else {
+      const addr = currentUser.addresses.find(a => a._id === id);
+      if (addr) {
+        setShippingDetails({
+          fullName: addr.fullName || currentUser?.name || "",
+          address: addr.street || "",
+          city: addr.city || "",
+          zipCode: addr.zipCode || "",
+          country: addr.country || "",
+          phone: addr.phone || "",
+        });
       }
-    } catch (err) {
-      console.error(err);
-      setError("Failed to record order details. Please contact customer service.");
-    } finally {
-      setProcessing(false);
     }
+  };
+
+  const handlePaymentSuccess = (order) => {
+    setSuccessOrder(order);
+    setProcessing(false);
   };
 
   const handleSubmit = async (e) => {
@@ -83,46 +121,57 @@ export default function Checkout() {
     setError("");
     setProcessing(true);
 
-    if (
-      PAYSTACK_PUBLIC_KEY &&
-      PAYSTACK_PUBLIC_KEY !== "pk_test_YOUR_PAYSTACK_KEY" &&
-      PAYSTACK_PUBLIC_KEY.trim() !== ""
-    ) {
-      try {
+    try {
+      // 1. Create order on backend first (cart is cleared upon success)
+      const order = await placeOrder(shippingDetails, null, discountAmount, appliedPromo);
+      if (!order) {
+        throw new Error("Failed to create order");
+      }
+
+      if (
+        PAYSTACK_PUBLIC_KEY &&
+        PAYSTACK_PUBLIC_KEY !== "pk_test_YOUR_PAYSTACK_KEY" &&
+        PAYSTACK_PUBLIC_KEY.trim() !== ""
+      ) {
         const liveNgnRate = (exchangeRates && exchangeRates["NGN"]) ? exchangeRates["NGN"] : 1600;
         const amountInKobo = Math.round(total * liveNgnRate * 100);
         
-        // Initialize payment on backend
+        // 2. Initialize payment on backend with the order ID and amount
         const emailToUse = currentUser?.email || "customer@nikdel.com";
-        const initResponse = await paymentService.initializePayment(emailToUse, amountInKobo);
-        const { access_code, reference } = initResponse.data || initResponse || {};
+        const initResponse = await paymentService.initializePayment(order._id || order.id, amountInKobo);
+        
+        // Match the backend response structure
+        const responseData = initResponse.data || initResponse;
+        const accessCode = responseData.accessCode || responseData.access_code;
+        const reference = responseData.reference;
 
-        // Paystack inline integration
-        const handler = window.PaystackPop.setup({
+        // Paystack inline integration (v2 syntax)
+        const paystack = new window.PaystackPop();
+        paystack.newTransaction({
           key: PAYSTACK_PUBLIC_KEY,
           email: emailToUse,
           amount: amountInKobo,
           currency: "NGN",
           ref: reference || "ref_" + Date.now(),
-          access_code: access_code,
-          callback: (response) => {
-            handleOrderPlacement(response.reference);
+          access_code: accessCode,
+          onSuccess: (response) => {
+            handlePaymentSuccess(order);
           },
-          onClose: () => {
+          onCancel: () => {
             setProcessing(false);
+            setError("Payment cancelled. You can complete this payment later from your orders list.");
           }
         });
-        handler.openIframe();
-      } catch (err) {
-        console.error("Paystack error:", err);
-        setError("Paystack Payment initialization failed. Please try again or use a different payment method.");
-        setProcessing(false);
+      } else {
+        // Mock gateway simulation
+        setTimeout(() => {
+          handlePaymentSuccess(order);
+        }, 1500);
       }
-    } else {
-      // Mock gateway simulation
-      setTimeout(() => {
-        handleOrderPlacement("mock_paystack_ref_" + Date.now());
-      }, 1500);
+    } catch (err) {
+      console.error("Checkout error:", err);
+      setError(err.response?.data?.message || err.message || "Payment initialization failed. Please try again.");
+      setProcessing(false);
     }
   };
 
@@ -204,6 +253,24 @@ export default function Checkout() {
               <Truck size={18} className="text-brand-500" />
               1. Delivery Address
             </h3>
+
+            {currentUser?.addresses?.length > 0 && (
+              <div className="mb-2">
+                <label className="text-xs font-bold text-slate-500 mb-1.5 block">Saved Addresses</label>
+                <select 
+                  value={selectedAddressId}
+                  onChange={handleAddressSelect}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                >
+                  {currentUser.addresses.map(addr => (
+                    <option key={addr._id} value={addr._id}>
+                      {addr.street}, {addr.city} {addr.isDefault ? "(Default)" : ""}
+                    </option>
+                  ))}
+                  <option value="new">+ Enter a new address</option>
+                </select>
+              </div>
+            )}
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2 flex flex-col gap-1.5">
@@ -250,10 +317,9 @@ export default function Checkout() {
                 <input
                   type="text"
                   name="zipCode"
-                  placeholder="10001"
+                  placeholder="10001 (Optional)"
                   value={shippingDetails.zipCode}
                   onChange={handleInputChange}
-                  required
                   className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                 />
               </div>

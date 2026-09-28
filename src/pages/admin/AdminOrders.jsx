@@ -55,11 +55,11 @@ export default function AdminOrders() {
   // Filters
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 
-      order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (order.id || order._id || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (order.userEmail || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (order.shippingDetails?.fullName || "").toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesStatus = statusFilter === "all" || order.status?.toLowerCase() === statusFilter.toLowerCase();
+    const matchesStatus = statusFilter === "all" || (order.orderStatus || "pending").toLowerCase() === statusFilter.toLowerCase();
     
     return matchesSearch && matchesStatus;
   });
@@ -154,7 +154,8 @@ export default function AdminOrders() {
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs">
                 {filteredOrders.map(order => {
-                  const isExpanded = expandedOrderId === order.id;
+                  const orderId = order.id || order._id || order.orderNumber;
+                  const isExpanded = expandedOrderId === orderId;
                   const formattedDate = order.date ? new Date(order.date).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -164,11 +165,11 @@ export default function AdminOrders() {
                   }) : "Unknown Date";
 
                   return (
-                    <React.Fragment key={order.id}>
+                    <React.Fragment key={orderId}>
                       {/* Normal Row */}
                       <tr className="hover:bg-slate-50/50 transition-colors">
                         <td className="px-6 py-4 font-bold font-mono text-slate-850">
-                          {order.id}
+                          {orderId}
                         </td>
                         <td className="px-6 py-4">
                           <span className="font-bold text-slate-800 block">
@@ -185,29 +186,29 @@ export default function AdminOrders() {
                           ${parseFloat(order.total).toFixed(2)}
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`inline-flex items-center border px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${getStatusBadge(order.status)}`}>
-                            {order.status || "Processing"}
+                          <span className={`inline-flex items-center border px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${getStatusBadge(order.orderStatus)}`}>
+                            {order.orderStatus || "Pending"}
                           </span>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex justify-center gap-1.5">
                             <button
-                              onClick={() => handleUpdateStatus(order.id, order.userId, order.status, "Processing")}
-                              disabled={order.status?.toLowerCase() === "processing"}
+                              onClick={() => handleUpdateStatus(orderId, order.userId, order.orderStatus, "Processing")}
+                              disabled={(order.orderStatus || "pending").toLowerCase() === "processing"}
                               className="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-extrabold text-[10px] rounded-lg transition-all border border-amber-200/50 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                               Process
                             </button>
                             <button
-                              onClick={() => handleUpdateStatus(order.id, order.userId, order.status, "Shipped")}
-                              disabled={order.status?.toLowerCase() === "shipped"}
+                              onClick={() => handleUpdateStatus(orderId, order.userId, order.orderStatus, "Shipped")}
+                              disabled={(order.orderStatus || "pending").toLowerCase() === "shipped"}
                               className="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-extrabold text-[10px] rounded-lg transition-all border border-blue-200/50 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                               Ship
                             </button>
                             <button
-                              onClick={() => handleUpdateStatus(order.id, order.userId, order.status, "Delivered")}
-                              disabled={order.status?.toLowerCase() === "delivered"}
+                              onClick={() => handleUpdateStatus(orderId, order.userId, order.orderStatus, "Delivered")}
+                              disabled={(order.orderStatus || "pending").toLowerCase() === "delivered"}
                               className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-extrabold text-[10px] rounded-lg transition-all border border-emerald-200/50 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                               Deliver
@@ -216,7 +217,7 @@ export default function AdminOrders() {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <button
-                            onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
+                            onClick={() => setExpandedOrderId(isExpanded ? null : orderId)}
                             className="p-1 rounded-full bg-slate-50 text-slate-450 hover:text-brand-600 transition-colors cursor-pointer"
                             title="Expand order details"
                           >

@@ -142,6 +142,38 @@ export function AuthProvider({ children }) {
     return payload;
   };
 
+  // Address Management
+  const addAddress = async (addressData) => {
+    const response = await api.post("/users/me/addresses", addressData);
+    const updatedAddresses = response.data.data;
+    const updatedUser = { ...currentUser, addresses: updatedAddresses };
+    setCurrentUser(updatedUser);
+    localStorage.setItem("nikdel_user", JSON.stringify(updatedUser));
+    return updatedAddresses;
+  };
+
+  const updateAddress = async (addressId, addressData) => {
+    const response = await api.patch(`/users/me/addresses/${addressId}`, addressData);
+    const updatedAddresses = response.data.data;
+    const updatedUser = { ...currentUser, addresses: updatedAddresses };
+    setCurrentUser(updatedUser);
+    localStorage.setItem("nikdel_user", JSON.stringify(updatedUser));
+    return updatedAddresses;
+  };
+
+  const deleteAddress = async (addressId) => {
+    const response = await api.delete(`/users/me/addresses/${addressId}`);
+    const updatedAddresses = response.data.data;
+    const updatedUser = { ...currentUser, addresses: updatedAddresses };
+    setCurrentUser(updatedUser);
+    localStorage.setItem("nikdel_user", JSON.stringify(updatedUser));
+    return updatedAddresses;
+  };
+
+  const setDefaultAddress = async (addressId) => {
+    return await updateAddress(addressId, { isDefault: true });
+  };
+
   const value = {
     currentUser,
     signup,
@@ -149,7 +181,11 @@ export function AuthProvider({ children }) {
     loginWithGoogle,
     logout,
     forgotPassword,
-    submitResetPassword
+    submitResetPassword,
+    addAddress,
+    updateAddress,
+    deleteAddress,
+    setDefaultAddress
   };
 
   return (

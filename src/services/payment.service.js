@@ -1,10 +1,8 @@
 import api from './api';
 
 const paymentService = {
-  // Initialize payment via backend
-  initializePayment: async (email, amount) => {
-    // Assuming backend endpoint /payments/initialize
-    const response = await api.post('/payments/initialize', { email, amount });
+  initializePayment: async (orderId, amountInKobo) => {
+    const response = await api.post(`/payments/initialize/${orderId}`, { amountInKobo });
     return response.data;
   },
 

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 import { 
   ShoppingBag, 
   User, 
@@ -19,6 +20,7 @@ import { useSettings } from "../context/SettingsContext";
 export default function Header() {
   const { currentUser, logout } = useAuth();
   const { cartItemCount } = useCart();
+  const { wishlist } = useWishlist();
   const { settings } = useSettings();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -127,9 +129,11 @@ export default function Header() {
             {/* Wishlist Icon */}
             <Link to="/account/wishlist" className="relative text-slate-700 hover:text-brand-600 transition-colors group flex items-center">
               <Heart size={26} strokeWidth={1.5} className="group-hover:scale-105 transition-transform" />
-              <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                0
-              </span>
+              {wishlist?.length > 0 && (
+                <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {wishlist.length}
+                </span>
+              )}
             </Link>
 
             {/* Cart Icon */}

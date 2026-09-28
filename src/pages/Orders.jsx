@@ -89,8 +89,9 @@ export default function Orders() {
       {/* Orders List */}
       <div className="space-y-4">
         {orders.map((order) => {
-          const isExpanded = expandedOrderId === order.id;
-          const orderDateString = order.date ? new Date(order.date).toLocaleDateString("en-US", {
+          const orderId = order.id || order._id || order.orderNumber;
+          const isExpanded = expandedOrderId === orderId;
+          const orderDateString = (order.createdAt || order.date) ? new Date(order.createdAt || order.date).toLocaleDateString("en-US", {
             year: "numeric",
             month: "long",
             day: "numeric",
@@ -100,21 +101,21 @@ export default function Orders() {
 
           return (
             <div
-              key={order.id}
+              key={orderId}
               className="bg-white border border-slate-105 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow"
             >
               {/* Order Header Summary */}
               <div
-                onClick={() => toggleOrderExpand(order.id)}
+                onClick={() => toggleOrderExpand(orderId)}
                 className="p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 cursor-pointer select-none hover:bg-slate-50/50 transition-colors"
               >
                 <div className="space-y-1.5 flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2.5">
                     <span className="font-extrabold text-slate-900 text-sm truncate max-w-[180px]">
-                      ID: {order.id}
+                      ID: {orderId}
                     </span>
-                    <span className={`inline-flex items-center border px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${getStatusColor(order.status)}`}>
-                      {order.status || "Processing"}
+                    <span className={`inline-flex items-center border px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${getStatusColor(order.orderStatus)}`}>
+                      {order.orderStatus || "Processing"}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold">
@@ -152,7 +153,7 @@ export default function Orders() {
                         <div 
                           className="h-full bg-brand-500 transition-all duration-500" 
                           style={{
-                            width: order.status?.toLowerCase() === "delivered" ? "100%" : order.status?.toLowerCase() === "shipped" ? "50%" : "0%"
+                            width: order.orderStatus?.toLowerCase() === "delivered" ? "100%" : order.orderStatus?.toLowerCase() === "shipped" ? "50%" : "0%"
                           }}
                         ></div>
                       </div>
@@ -162,7 +163,7 @@ export default function Orders() {
                         <div 
                           className="w-full bg-brand-500 transition-all duration-500" 
                           style={{
-                            height: order.status?.toLowerCase() === "delivered" ? "100%" : order.status?.toLowerCase() === "shipped" ? "50%" : "0%"
+                            height: order.orderStatus?.toLowerCase() === "delivered" ? "100%" : order.orderStatus?.toLowerCase() === "shipped" ? "50%" : "0%"
                           }}
                         ></div>
                       </div>
@@ -170,7 +171,7 @@ export default function Orders() {
                       {/* Step 1: Processing */}
                       <div className="relative z-10 flex md:flex-col items-center gap-4 md:gap-2.5 flex-1 w-full">
                         <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shadow-sm transition-all duration-300 ${
-                          order.status ? "bg-brand-500 text-white border-4 border-brand-100" : "bg-slate-100 text-slate-400"
+                          order.orderStatus ? "bg-brand-500 text-white border-4 border-brand-100" : "bg-slate-100 text-slate-400"
                         }`}>
                           ✓
                         </div>
@@ -185,20 +186,20 @@ export default function Orders() {
                       {/* Step 2: Shipped */}
                       <div className="relative z-10 flex md:flex-col items-center gap-4 md:gap-2.5 flex-1 w-full">
                         <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shadow-sm transition-all duration-300 ${
-                          order.status?.toLowerCase() === "shipped" || order.status?.toLowerCase() === "delivered" 
+                          order.orderStatus?.toLowerCase() === "shipped" || order.orderStatus?.toLowerCase() === "delivered" 
                             ? "bg-brand-500 text-white border-4 border-brand-100" 
-                            : order.status?.toLowerCase() === "processing" 
+                            : order.orderStatus?.toLowerCase() === "processing" 
                             ? "bg-white text-brand-600 border-4 border-brand-500 animate-pulse"
                             : "bg-slate-100 text-slate-400 border-4 border-white"
                         }`}>
-                          {order.status?.toLowerCase() === "shipped" || order.status?.toLowerCase() === "delivered" ? "✓" : "2"}
+                          {order.orderStatus?.toLowerCase() === "shipped" || order.orderStatus?.toLowerCase() === "delivered" ? "✓" : "2"}
                         </div>
                         <div className="text-left md:text-center">
                           <p className="text-xs font-extrabold text-slate-800">Shipped & In Transit</p>
                           <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
-                            {order.status?.toLowerCase() === "shipped" || order.status?.toLowerCase() === "delivered" 
-                              ? (order.date ? new Date(new Date(order.date).getTime() + 15000).toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : "In transit")
-                              : order.status?.toLowerCase() === "processing"
+                            {order.orderStatus?.toLowerCase() === "shipped" || order.orderStatus?.toLowerCase() === "delivered" 
+                              ? (order.createdAt ? new Date(new Date(order.createdAt).getTime() + 15000).toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : "In transit")
+                              : order.orderStatus?.toLowerCase() === "processing"
                               ? "Awaiting shipment"
                               : "Pending"}
                           </p>
@@ -208,20 +209,20 @@ export default function Orders() {
                       {/* Step 3: Delivered */}
                       <div className="relative z-10 flex md:flex-col items-center gap-4 md:gap-2.5 flex-1 w-full">
                         <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shadow-sm transition-all duration-300 ${
-                          order.status?.toLowerCase() === "delivered" 
+                          order.orderStatus?.toLowerCase() === "delivered" 
                             ? "bg-brand-500 text-white border-4 border-brand-100" 
-                            : order.status?.toLowerCase() === "shipped"
+                            : order.orderStatus?.toLowerCase() === "shipped"
                             ? "bg-white text-brand-600 border-4 border-brand-500 animate-pulse"
                             : "bg-slate-100 text-slate-400 border-4 border-white"
                         }`}>
-                          {order.status?.toLowerCase() === "delivered" ? "✓" : "3"}
+                          {order.orderStatus?.toLowerCase() === "delivered" ? "✓" : "3"}
                         </div>
                         <div className="text-left md:text-center">
                           <p className="text-xs font-extrabold text-slate-850">Delivered</p>
                           <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
-                            {order.status?.toLowerCase() === "delivered" 
-                              ? (order.date ? new Date(new Date(order.date).getTime() + 30000).toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : "Delivered")
-                              : order.status?.toLowerCase() === "shipped"
+                            {order.orderStatus?.toLowerCase() === "delivered" 
+                              ? (order.createdAt ? new Date(new Date(order.createdAt).getTime() + 30000).toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : "Delivered")
+                              : order.orderStatus?.toLowerCase() === "shipped"
                               ? "Out for delivery"
                               : "Pending"}
                           </p>
@@ -272,18 +273,18 @@ export default function Orders() {
                             <MapPin size={16} className="text-brand-500 shrink-0 mt-0.5" />
                             <div>
                               <span className="font-bold text-slate-800 block mb-1">
-                                {order.shippingDetails?.fullName}
+                                {order.user?.firstName} {order.user?.lastName}
                               </span>
-                              <span>{order.shippingDetails?.address}</span>
+                              <span>{order.shippingAddress?.street}</span>
                               <span className="block mt-0.5">
-                                {order.shippingDetails?.city}, {order.shippingDetails?.zipCode},{" "}
-                                {order.shippingDetails?.country}
+                                {order.shippingAddress?.city}, {order.shippingAddress?.zipCode},{" "}
+                                {order.shippingAddress?.country}
                               </span>
                             </div>
                           </div>
                           <div className="flex gap-2.5 items-center border-t border-slate-50 pt-2.5">
                             <Clock size={16} className="text-brand-500 shrink-0" />
-                            <span>Phone: {order.shippingDetails?.phone}</span>
+                            <span>Phone: {order.shippingAddress?.phone}</span>
                           </div>
                         </div>
                       </div>

@@ -17,7 +17,7 @@ export default function Checkout() {
   // Read promo discount details from cart page navigation state
   const appliedPromo = location.state?.appliedPromo || "";
   const discountAmount = location.state?.discountAmount || 0;
-
+  
   // Form states
   const [shippingDetails, setShippingDetails] = useState(() => {
     if (currentUser?.addresses?.length > 0) {

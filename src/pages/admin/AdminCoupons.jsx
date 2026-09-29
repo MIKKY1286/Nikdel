@@ -9,6 +9,7 @@ export default function AdminCoupons() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
+  const [couponToDelete, setCouponToDelete] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const { showToast } = useToast();
@@ -31,17 +32,26 @@ export default function AdminCoupons() {
     // eslint-disable-next-line
   }, []);
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this coupon?")) {
+  const handleDeleteClick = (id) => {
+    setCouponToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (couponToDelete) {
       try {
-        await adminService.deleteCoupon(id);
-        setCoupons(coupons.filter(c => (c._id || c.id) !== id));
+        await adminService.deleteCoupon(couponToDelete);
+        setCoupons(coupons.filter(c => (c._id || c.id) !== couponToDelete));
         showToast("Coupon deleted successfully", "success");
       } catch (err) {
         console.error(err);
         showToast("Failed to delete coupon", "error");
       }
+      setCouponToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setCouponToDelete(null);
   };
 
   const filtered = coupons.filter(c => 
@@ -135,19 +145,25 @@ export default function AdminCoupons() {
                     {new Date(coupon.expiryDate).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      coupon.status === 'active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
-                      'bg-rose-50 text-rose-700 border border-rose-100'
-                    }`}>
-                      {coupon.status}
-                    </span>
+                    {(() => {
+                      const isExpired = new Date(coupon.expiryDate) < new Date();
+                      const displayStatus = isExpired ? 'expired' : coupon.status;
+                      return (
+                        <span className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                          displayStatus === 'active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
+                          'bg-rose-50 text-rose-700 border border-rose-100'
+                        }`}>
+                          {displayStatus}
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button onClick={() => handleOpenForm(coupon)} className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
                         <Edit size={16} />
                       </button>
-                      <button onClick={() => handleDelete(coupon._id || coupon.id)} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
+                      <button onClick={() => handleDeleteClick(coupon._id || coupon.id)} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors">
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -180,6 +196,32 @@ export default function AdminCoupons() {
         onSave={handleSaveCoupon} 
         editingCoupon={editingCoupon} 
       />
+
+      {/* Delete Confirmation Modal */}
+      {couponToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 animate-scale-in">
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Delete Coupon</h3>
+            <p className="text-slate-500 mb-6 text-sm">
+              Are you sure you want to delete this coupon? This action cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button 
+                onClick={cancelDelete}
+                className="px-4 py-2 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDelete}
+                className="px-4 py-2 text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors shadow-sm"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

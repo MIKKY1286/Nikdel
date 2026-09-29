@@ -174,6 +174,14 @@ export function AuthProvider({ children }) {
     return await updateAddress(addressId, { isDefault: true });
   };
 
+  const updateProfile = async (profileData) => {
+    const response = await api.patch("/users/me", profileData);
+    const updatedUser = response.data.data;
+    setCurrentUser(updatedUser);
+    localStorage.setItem("nikdel_user", JSON.stringify(updatedUser));
+    return updatedUser;
+  };
+
   const value = {
     currentUser,
     signup,
@@ -185,12 +193,20 @@ export function AuthProvider({ children }) {
     addAddress,
     updateAddress,
     deleteAddress,
-    setDefaultAddress
+    setDefaultAddress,
+    updateProfile
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-slate-900 border-r-transparent mb-4"></div>
+          <p className="text-slate-500 font-medium animate-pulse">Loading...</p>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 }

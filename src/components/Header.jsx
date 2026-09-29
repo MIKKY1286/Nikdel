@@ -97,7 +97,11 @@ export default function Header() {
             {currentUser ? (
               <div className="flex items-center gap-3">
                 <Link to="/account/settings" className="flex items-center gap-3 hover:text-brand-600 transition-colors cursor-pointer">
-                  <User size={24} className="text-slate-600" />
+                  {currentUser.avatar && currentUser.avatar !== 'no-photo.jpg' ? (
+                    <img src={currentUser.avatar} alt="Avatar" className="w-8 h-8 rounded-full object-cover border border-slate-200" />
+                  ) : (
+                    <User size={24} className="text-slate-600" />
+                  )}
                   <div className="flex flex-col">
                     <span className="text-[10px] text-slate-400 font-semibold leading-none">Account</span>
                     <span className="text-xs font-bold text-slate-700 max-w-[100px] truncate leading-none mt-1">
@@ -231,7 +235,13 @@ export default function Header() {
           <div className="flex flex-col space-y-3 font-medium">
             <Link to="/" onClick={() => setMobileMenuOpen(false)} className={`text-base py-1 ${isActive("/")}`}>Home</Link>
             <Link to="/shop" onClick={() => setMobileMenuOpen(false)} className={`text-base py-1 ${isActive("/shop")}`}>Shop</Link>
-            <Link to="/orders" onClick={() => setMobileMenuOpen(false)} className={`text-base py-1 ${isActive("/orders")}`}>Orders</Link>
+            <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className={`text-base py-1 ${isActive("/contact")}`}>Contact</Link>
+            {currentUser && (
+              <>
+                <Link to="/orders" onClick={() => setMobileMenuOpen(false)} className={`text-base py-1 ${isActive("/orders")}`}>Orders</Link>
+                <Link to="/account/settings" onClick={() => setMobileMenuOpen(false)} className={`text-base py-1 ${isActive("/account/settings")}`}>Profile</Link>
+              </>
+            )}
           </div>
 
           <div className="border-t border-slate-100 pt-4 flex flex-col gap-3">

@@ -10,20 +10,21 @@ export default function AccountLayout() {
   const menuItems = [
     { name: "Dashboard", path: "/account", icon: LayoutDashboard },
     { name: "Orders", path: "/orders", icon: ShoppingBag },
-    { name: "Downloads", path: "/account/downloads", icon: Download },
     { name: "Addresses", path: "/account/addresses", icon: MapPin },
-    { name: "Account details", path: "/account/details", icon: User },
     { name: "Settings", path: "/account/settings", icon: User },
     { name: "Wishlist", path: "/account/wishlist", icon: Heart },
-    { name: "Compare", path: "/account/compare", icon: ArrowRightLeft },
   ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
       {/* Breadcrumb or simple greeting */}
       <div className="flex items-center gap-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl px-6">
-        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-slate-400 border border-slate-200">
-          <User size={24} />
+        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-slate-400 border border-slate-200 overflow-hidden">
+          {currentUser?.avatar && currentUser.avatar !== 'no-photo.jpg' ? (
+            <img src={currentUser.avatar} alt="Avatar" className="w-full h-full object-cover" />
+          ) : (
+            <User size={24} />
+          )}
         </div>
         <div>
           <p className="text-xs text-slate-500">Welcome back,</p>

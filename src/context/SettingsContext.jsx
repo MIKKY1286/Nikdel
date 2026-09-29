@@ -54,7 +54,8 @@ export function SettingsProvider({ children }) {
         promoButtonText: newSettings.promoButtonText || '',
         promoLink: newSettings.promoLink || '',
         promoImage: newSettings.promoImage || '',
-        promoEnabled: newSettings.promoEnabled ?? false
+        promoEnabled: newSettings.promoEnabled ?? false,
+        promotions: newSettings.promotions || []
       };
       
       localStorage.setItem('nikdel_extended_settings', JSON.stringify(extendedPayload));
@@ -158,7 +159,14 @@ export function SettingsProvider({ children }) {
 
   return (
     <SettingsContext.Provider value={value}>
-      {!loading && children}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-slate-900 border-r-transparent mb-4"></div>
+          <p className="text-slate-500 font-medium animate-pulse">Loading...</p>
+        </div>
+      ) : (
+        children
+      )}
     </SettingsContext.Provider>
   );
 }

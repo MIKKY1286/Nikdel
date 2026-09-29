@@ -460,41 +460,45 @@ export default function Home() {
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12"
       >
         {claimed ? (
-          settings?.promoEnabled ? (
-            <div className="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-3xl p-8 sm:p-12 lg:p-16 border border-indigo-800 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden shadow-2xl">
-              <div className="absolute -left-24 -top-24 w-64 h-64 rounded-full bg-blue-500/20 blur-3xl"></div>
-              <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-indigo-500/20 blur-3xl"></div>
-              <div className="space-y-4 relative max-w-2xl z-10">
-                <span className="inline-block bg-blue-500/20 text-blue-300 font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider border border-blue-400/30">
-                  Special Offer
-                </span>
-                <h3 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
-                  {settings?.promoTitle || "Special Promotional Offer"}
-                </h3>
-                <p className="text-blue-100/80 text-base sm:text-lg leading-relaxed max-w-xl">
-                  {settings?.promoDesc || "Don't miss out on our latest deals. Upgrade your tools and materials today."}
-                </p>
+          <div className="space-y-6">
+            {settings?.promotions && settings.promotions.filter(p => p.enabled).length > 0 ? (
+              settings.promotions.filter(p => p.enabled).map((promo, idx) => (
+                <div key={promo.id || idx} className="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-3xl p-8 sm:p-12 lg:p-16 border border-indigo-800 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden shadow-2xl">
+                  <div className="absolute -left-24 -top-24 w-64 h-64 rounded-full bg-blue-500/20 blur-3xl"></div>
+                  <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-indigo-500/20 blur-3xl"></div>
+                  <div className="space-y-4 relative max-w-2xl z-10">
+                    <span className="inline-block bg-blue-500/20 text-blue-300 font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider border border-blue-400/30">
+                      Special Offer
+                    </span>
+                    <h3 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                      {promo.title || "Special Promotional Offer"}
+                    </h3>
+                    <p className="text-blue-100/80 text-base sm:text-lg leading-relaxed max-w-xl">
+                      {promo.desc || "Don't miss out on our latest deals. Upgrade your tools and materials today."}
+                    </p>
+                  </div>
+                  <div className="relative shrink-0 z-10 w-full md:w-auto mt-4 md:mt-0">
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Link
+                        to={promo.link || "/shop"}
+                        className="inline-flex w-full md:w-auto justify-center items-center gap-2 bg-white hover:bg-slate-50 text-indigo-900 font-extrabold px-8 py-4 rounded-xl transition-all shadow-lg"
+                      >
+                        {promo.buttonText || "Shop Now"}
+                      </Link>
+                    </motion.div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="bg-emerald-50 rounded-3xl p-8 sm:p-12 border border-emerald-100 flex flex-col items-center justify-center text-center space-y-4">
+                <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-2">
+                  <ShieldCheck size={32} />
+                </div>
+                <h3 className="text-2xl font-extrabold text-emerald-900">Voucher Claimed!</h3>
+                <p className="text-emerald-700">Your 10% discount has been applied to your account and is ready for your next checkout.</p>
               </div>
-              <div className="relative shrink-0 z-10 w-full md:w-auto mt-4 md:mt-0">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Link
-                    to={settings?.promoLink || "/shop"}
-                    className="inline-flex w-full md:w-auto justify-center items-center gap-2 bg-white hover:bg-slate-50 text-indigo-900 font-extrabold px-8 py-4 rounded-xl transition-all shadow-lg"
-                  >
-                    {settings?.promoButtonText || "Shop Now"}
-                  </Link>
-                </motion.div>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-emerald-50 rounded-3xl p-8 sm:p-12 border border-emerald-100 flex flex-col items-center justify-center text-center space-y-4">
-              <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-2">
-                <ShieldCheck size={32} />
-              </div>
-              <h3 className="text-2xl font-extrabold text-emerald-900">Voucher Claimed!</h3>
-              <p className="text-emerald-700">Your 10% discount has been applied to your account and is ready for your next checkout.</p>
-            </div>
-          )
+            )}
+          </div>
         ) : (
           <div className="bg-brand-50 rounded-3xl p-8 sm:p-12 lg:p-16 border border-brand-100 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
             <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-brand-100/50 blur-3xl"></div>

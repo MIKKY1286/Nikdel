@@ -87,6 +87,9 @@ const AdminProtectedRoute = ({ children }) => {
   if (!currentUser) {
     return <Navigate to="/admin/login" replace />;
   }
+  if (currentUser.role !== 'admin') {
+    return <Navigate to="/" replace />;
+  }
   return children;
 };
 
@@ -129,7 +132,7 @@ function App() {
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/orders" element={<Orders />} />
                   <Route path="/account" element={<AccountLayout />}>
-                    <Route index element={<Navigate to="orders" replace />} />
+                    <Route index element={<Navigate to="settings" replace />} />
                     <Route path="settings" element={<UserSettings />} />
                     <Route path="wishlist" element={<Wishlist />} />
                     <Route path="addresses" element={<Addresses />} />

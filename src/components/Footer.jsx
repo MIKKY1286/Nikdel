@@ -1,17 +1,31 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Send, MapPin, Phone, Mail, Award, CheckCircle } from "lucide-react";
+import { Send, MapPin, Phone, Mail, Award, CheckCircle, Loader } from "lucide-react";
+import api from "../services/api";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
     if (email.trim()) {
-      setSubscribed(true);
-      setEmail("");
-      setTimeout(() => setSubscribed(false), 5000);
+      try {
+        setLoading(true);
+        setError(null);
+        await api.post('/newsletter/subscribe', { email });
+        setSubscribed(true);
+        setEmail("");
+        setTimeout(() => setSubscribed(false), 5000);
+      } catch (err) {
+        console.error("Subscription error:", err);
+        setError(err.response?.data?.message || "Failed to subscribe");
+        setTimeout(() => setError(null), 5000);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -90,21 +104,26 @@ export default function Footer() {
                 Successfully subscribed!
               </div>
             ) : (
-              <form onSubmit={handleSubscribe} className="relative flex">
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full bg-slate-900 border border-slate-800 text-white rounded-xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-1 top-1 bottom-1 w-10 bg-brand-600 hover:bg-brand-500 text-white rounded-lg flex items-center justify-center transition-colors"
-                >
-                  <Send size={16} />
-                </button>
+              <form onSubmit={handleSubscribe} className="relative flex flex-col gap-2">
+                <div className="relative flex">
+                  <input
+                    type="email"
+                    placeholder="Your email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={loading}
+                    className="w-full bg-slate-900 border border-slate-800 text-white rounded-xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all disabled:opacity-50"
+                  />
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="absolute right-1 top-1 bottom-1 w-10 bg-brand-600 hover:bg-brand-500 disabled:bg-slate-700 text-white rounded-lg flex items-center justify-center transition-colors"
+                  >
+                    {loading ? <Loader size={16} className="animate-spin" /> : <Send size={16} />}
+                  </button>
+                </div>
+                {error && <span className="text-red-400 text-xs mt-1">{error}</span>}
               </form>
             )}
           </div>

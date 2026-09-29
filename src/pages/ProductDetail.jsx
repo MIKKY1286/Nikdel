@@ -287,7 +287,27 @@ export default function ProductDetail() {
               {adding ? "Processing..." : cartItem ? "View in Cart" : "Add to cart"}
             </button>
             
-            <button className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold h-12 rounded-xl transition-all shadow-sm">
+            <button 
+              onClick={async () => {
+                if (!currentUser) {
+                  navigate("/login");
+                  return;
+                }
+                if (!cartItem) {
+                  setAdding(true);
+                  await addToCart({
+                    id: productId,
+                    title: product.name,
+                    price: product.price,
+                    image: Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : (product.image || 'https://via.placeholder.com/150'),
+                    category: product.category?.name || product.category || 'Uncategorized'
+                  }, quantity);
+                  setAdding(false);
+                }
+                navigate("/checkout");
+              }}
+              className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold h-12 rounded-xl transition-all shadow-sm"
+            >
               Buy Now
             </button>
           </div>
@@ -350,15 +370,15 @@ export default function ProductDetail() {
                       <div key={review._id || review.id} className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex gap-4">
                         <div className="w-12 h-12 bg-slate-200 rounded-full flex-shrink-0 flex items-center justify-center text-slate-600 font-bold text-lg overflow-hidden">
                           {review.user?.avatar && review.user.avatar !== 'no-photo.jpg' ? (
-                            <img src={review.user.avatar} alt={review.user.firstName} className="w-full h-full object-cover" />
+                            <img src={review.user.avatar} alt={review.user?.name || 'User'} className="w-full h-full object-cover" />
                           ) : (
-                            (review.user?.firstName?.[0] || review.user?.name?.[0] || 'U').toUpperCase()
+                            (review.user?.name?.[0] || 'U').toUpperCase()
                           )}
                         </div>
                         <div className="flex-1 space-y-2">
                           <div className="flex justify-between items-start">
                             <div>
-                              <h4 className="font-bold text-slate-900">{review.user?.firstName || review.user?.name || 'User'}</h4>
+                              <h4 className="font-bold text-slate-900">{review.user?.name || 'User'}</h4>
                               <span className="text-xs text-slate-400">{new Date(review.createdAt).toLocaleDateString()}</span>
                             </div>
                             <div className="flex text-amber-400">

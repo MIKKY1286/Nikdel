@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import productService from "../services/product.service";
 import { useAuth } from "../context/AuthContext";
 import { useSettings } from "../context/SettingsContext";
+import { useCart } from "../context/CartContext";
 
 
 export default function Home() {
@@ -24,7 +25,15 @@ export default function Home() {
   
   const { currentUser } = useAuth();
   const { settings } = useSettings();
-  const [claimed, setClaimed] = useState(false);
+  const { orders } = useCart();
+  const [claimed, setClaimed] = useState(
+    localStorage.getItem("nikdel_welcome_claimed") === "true" || (currentUser && orders && orders.length > 0)
+  );
+
+  const handleClaimVoucher = () => {
+    setClaimed(true);
+    localStorage.setItem("nikdel_welcome_claimed", "true");
+  };
   const [currentSlide, setCurrentSlide] = useState(0);
   const [timeLeft, setTimeLeft] = useState({ hours: 12, mins: 45, secs: 30 });
 
@@ -215,10 +224,10 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pt-8">
           {[
-            { title: "Payment only online", desc: "Tasigforsamhet beteendedesign. Mobile checkout. Ylig kärrtorpa.", icon: "bg-amber-100 border-amber-300" },
-            { title: "New stocks and sales", desc: "Tasigforsamhet beteendedesign. Mobile checkout. Ylig kärrtorpa.", icon: "bg-blue-100 border-blue-300" },
-            { title: "Quality assurance", desc: "Tasigforsamhet beteendedesign. Mobile checkout. Ylig kärrtorpa.", icon: "bg-orange-100 border-orange-300" },
-            { title: "Delivery from 1 hour", desc: "Tasigforsamhet beteendedesign. Mobile checkout. Ylig kärrtorpa.", icon: "bg-emerald-100 border-emerald-300" }
+            { title: "Payment only online", desc: "Secure, seamless online checkout using multiple supported payment methods.", icon: "bg-amber-100 border-amber-300" },
+            { title: "New stocks and sales", desc: "Regular updates on our inventory with exciting new products and seasonal sales.", icon: "bg-blue-100 border-blue-300" },
+            { title: "Quality assurance", desc: "All our products undergo strict quality checks to ensure you get the best.", icon: "bg-orange-100 border-orange-300" },
+            { title: "Delivery from 1 hour", desc: "Lightning fast delivery services directly to your doorstep in record time.", icon: "bg-emerald-100 border-emerald-300" }
           ].map((feat, index) => (
             <div key={index} className="flex gap-4 items-start">
               <div className="w-10 h-10 shrink-0 relative mt-1">
@@ -515,7 +524,7 @@ export default function Home() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setClaimed(true)}
+                  onClick={handleClaimVoucher}
                   className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold px-7 py-4 rounded-xl transition-all shadow-lg shadow-brand-600/15"
                 >
                   Claim Voucher

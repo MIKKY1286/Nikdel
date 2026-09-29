@@ -83,12 +83,12 @@ export default function BlogPostDetail() {
 
       <div className="border-t border-slate-200 mt-16 pt-8 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center text-slate-500 font-bold text-xl">
-            {(post.author?.firstName?.[0] || 'A').toUpperCase()}
+          <div className="w-12 h-12 bg-slate-200 rounded-full flex-center justify-center text-slate-500 font-bold text-xl flex items-center">
+            {(post.author?.name?.[0] || 'U').toUpperCase()}
           </div>
           <div>
             <p className="text-sm text-slate-500 font-medium">Written by</p>
-            <p className="font-bold text-slate-900">{post.author?.firstName || 'Admin'} {post.author?.lastName || ''}</p>
+            <p className="font-bold text-slate-900">{post.author?.name || 'User'}</p>
           </div>
         </div>
       </div>

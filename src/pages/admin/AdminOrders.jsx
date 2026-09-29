@@ -173,7 +173,7 @@ export default function AdminOrders() {
                         </td>
                         <td className="px-6 py-4">
                           <span className="font-bold text-slate-800 block">
-                            {order.shippingDetails?.fullName || "Guest Customer"}
+                            {order.shippingDetails?.fullName || order.user?.name || order.userName || "Guest Customer"}
                           </span>
                           <span className="text-[10px] text-slate-400 font-medium">
                             {order.userEmail || "anonymous"}

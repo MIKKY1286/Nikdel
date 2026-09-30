@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { useSettings } from "../context/SettingsContext";
 import { Package, ChevronDown, ChevronUp, Calendar, MapPin, Clock } from "lucide-react";
 
 export default function Orders() {
   const { currentUser } = useAuth();
   const { orders, loadingCart } = useCart();
+  const { formatPrice } = useSettings();
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
   const toggleOrderExpand = (id) => {
@@ -88,7 +90,7 @@ export default function Orders() {
 
       {/* Orders List */}
       <div className="space-y-4">
-        {orders.map((order) => {
+        {orders.map((order, index) => {
           const orderId = order.id || order._id || order.orderNumber;
           const isExpanded = expandedOrderId === orderId;
           const orderDateString = (order.createdAt || order.date) ? new Date(order.createdAt || order.date).toLocaleDateString("en-US", {
@@ -101,7 +103,7 @@ export default function Orders() {
 
           return (
             <div
-              key={orderId}
+              key={`${orderId}-${index}`}
               className="bg-white border border-slate-105 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow"
             >
               {/* Order Header Summary */}
@@ -128,7 +130,7 @@ export default function Orders() {
                   <div className="text-left sm:text-right">
                     <span className="text-xs text-slate-450 block font-semibold">Total Cost</span>
                     <span className="text-base font-extrabold text-slate-900">
-                      ${parseFloat(order.total).toFixed(2)}
+                      {formatPrice(order.total)}
                     </span>
                   </div>
                   <div className="p-1 rounded-full bg-slate-50 text-slate-450">
@@ -253,7 +255,7 @@ export default function Orders() {
                             </div>
                             <div className="text-right shrink-0">
                               <span className="font-semibold text-slate-800 block">
-                                ${parseFloat(item.price).toFixed(2)}
+                                {formatPrice(item.price)}
                               </span>
                               <span className="text-[10px] text-slate-400 block font-bold">
                                 Qty: {item.quantity || 1}
@@ -295,27 +297,27 @@ export default function Orders() {
                         <div className="bg-white border border-slate-100 rounded-xl p-4.5 space-y-2.5 text-xs font-semibold text-slate-500">
                           <div className="flex justify-between">
                             <span>Subtotal</span>
-                            <span className="text-slate-800">${parseFloat(order.subtotal || order.total * 0.9).toFixed(2)}</span>
+                            <span className="text-slate-800">{formatPrice(order.subtotal || order.total * 0.9)}</span>
                           </div>
                           {order.subtotal && order.subtotal > order.total && (
                             <div className="flex justify-between text-emerald-600">
                               <span>Promo Discount</span>
-                              <span>-${parseFloat(order.subtotal - order.total + (order.tax || 0) + (order.shipping || 0)).toFixed(2)}</span>
+                              <span>-{formatPrice(order.subtotal - order.total + (order.tax || order.subtotal * 0.08) + (order.shipping || 0))}</span>
                             </div>
                           )}
                           <div className="flex justify-between">
                             <span>Sales Tax (8%)</span>
-                            <span className="text-slate-800">${parseFloat(order.tax || 0).toFixed(2)}</span>
+                            <span className="text-slate-800">{formatPrice(order.tax || (order.subtotal ? order.subtotal * 0.08 : (order.total * 0.9) * 0.08))}</span>
                           </div>
                           <div className="flex justify-between">
                             <span>Shipping</span>
                             <span className="text-slate-800">
-                              {order.shipping === 0 ? "FREE" : `$${parseFloat(order.shipping || 0).toFixed(2)}`}
+                              {!order.shipping ? "FREE" : formatPrice(order.shipping)}
                             </span>
                           </div>
                           <div className="flex justify-between text-slate-900 font-extrabold text-sm border-t border-slate-100 pt-3 mt-1.5">
                             <span>Total Charge</span>
-                            <span>${parseFloat(order.total).toFixed(2)}</span>
+                            <span>{formatPrice(order.total)}</span>
                           </div>
                         </div>
                       </div>

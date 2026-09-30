@@ -156,13 +156,17 @@ export default function AdminOrders() {
                 {filteredOrders.map(order => {
                   const orderId = order.id || order._id || order.orderNumber;
                   const isExpanded = expandedOrderId === orderId;
-                  const formattedDate = order.date ? new Date(order.date).toLocaleDateString("en-US", {
+                  const dateToUse = order.createdAt || order.date;
+                  const formattedDate = dateToUse ? new Date(dateToUse).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
                     hour: "2-digit",
                     minute: "2-digit"
                   }) : "Unknown Date";
+
+                  const customerName = order.shippingDetails?.fullName || order.shippingAddress?.fullName || (order.user ? `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim() : null) || order.user?.name || order.userName || "Guest Customer";
+                  const customerEmail = order.user?.email || order.userEmail || "anonymous";
 
                   return (
                     <React.Fragment key={orderId}>
@@ -173,10 +177,10 @@ export default function AdminOrders() {
                         </td>
                         <td className="px-6 py-4">
                           <span className="font-bold text-slate-800 block">
-                            {order.shippingDetails?.fullName || order.user?.name || order.userName || "Guest Customer"}
+                            {customerName}
                           </span>
                           <span className="text-[10px] text-slate-400 font-medium">
-                            {order.userEmail || "anonymous"}
+                            {customerEmail}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-slate-500 font-semibold">
@@ -239,10 +243,10 @@ export default function AdminOrders() {
                                     Delivery Coordinates
                                   </h4>
                                   <div className="bg-white border border-slate-100 p-4 rounded-xl space-y-2">
-                                    <p className="font-bold text-slate-800">{order.shippingDetails?.fullName}</p>
-                                    <p>{order.shippingDetails?.address}</p>
-                                    <p>{order.shippingDetails?.city}, {order.shippingDetails?.zipCode}, {order.shippingDetails?.country}</p>
-                                    <p className="text-[10px] font-semibold text-slate-400">Phone: {order.shippingDetails?.phone}</p>
+                                    <p className="font-bold text-slate-800">{order.shippingDetails?.fullName || order.shippingAddress?.fullName || customerName}</p>
+                                    <p>{order.shippingDetails?.address || order.shippingAddress?.street || order.shippingAddress?.address}</p>
+                                    <p>{order.shippingDetails?.city || order.shippingAddress?.city}, {order.shippingDetails?.zipCode || order.shippingAddress?.zipCode}, {order.shippingDetails?.country || order.shippingAddress?.country}</p>
+                                    <p className="text-[10px] font-semibold text-slate-400">Phone: {order.shippingDetails?.phone || order.shippingAddress?.phone}</p>
                                   </div>
                                 </div>
 

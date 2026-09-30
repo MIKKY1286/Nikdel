@@ -115,26 +115,42 @@ export default function UserSettings() {
                 <User size={40} className="text-slate-300" />
               )}
             </div>
-            <div className="space-y-4 flex-1 w-full">
-              <div className="flex items-center gap-4">
-                <label className="cursor-pointer bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2 px-4 rounded-xl text-sm flex items-center gap-2 transition-colors shadow-sm">
+            <div className="space-y-3 flex-1 w-full">
+              <div className="flex flex-wrap items-center gap-3">
+                <label className="cursor-pointer bg-slate-900 text-white hover:bg-brand-600 font-semibold py-2.5 px-5 rounded-xl text-sm flex items-center gap-2 transition-all shadow-sm shadow-slate-900/10 hover:shadow-brand-500/20">
                   {isUploading ? <Loader size={16} className="animate-spin" /> : <Upload size={16} />}
                   {isUploading ? 'Uploading...' : 'Upload from Device'}
                   <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} disabled={isUploading} />
                 </label>
-                <span className="text-slate-400 text-sm">OR</span>
+                
+                {formData.avatar && (
+                  <button 
+                    type="button"
+                    onClick={() => setFormData({ ...formData, avatar: "" })}
+                    className="text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 px-4 py-2.5 rounded-xl transition-colors"
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Avatar Image URL</label>
-                <input 
-                  type="url" 
-                  name="avatar"
-                  value={formData.avatar}
-                  onChange={handleChange}
-                  placeholder="https://example.com/my-photo.jpg" 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" 
-                />
-                <p className="text-xs text-slate-400">Upload a file or paste a direct link to an image.</p>
+              
+              <div className="pt-2">
+                <details className="group">
+                  <summary className="text-sm font-semibold text-brand-600 hover:text-brand-700 cursor-pointer list-none flex items-center gap-1 transition-colors">
+                    <span className="group-open:hidden">+ Or paste a direct image link</span>
+                    <span className="hidden group-open:inline">- Hide image link</span>
+                  </summary>
+                  <div className="mt-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <input 
+                      type="url" 
+                      name="avatar"
+                      value={formData.avatar}
+                      onChange={handleChange}
+                      placeholder="https://example.com/my-photo.jpg" 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-slate-600 text-ellipsis" 
+                    />
+                  </div>
+                </details>
               </div>
             </div>
           </div>

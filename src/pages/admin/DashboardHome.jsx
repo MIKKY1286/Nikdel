@@ -22,7 +22,9 @@ export default function DashboardHome() {
 
     const fetchStats = async () => {
       try {
-        const data = await adminService.getDashboardStats();
+        const response = await adminService.getDashboardStats();
+        const data = response?.data || response; // Support both {data: ...} and direct objects
+        
         if (active && data) {
           setStats({
             totalSales: data.totalSales || 0,

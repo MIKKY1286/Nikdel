@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import productService from "../services/product.service";
-import { ShoppingCart, Heart, Share2, ArrowRightLeft, ShieldCheck, CreditCard, Plus, Minus, Star, MessageCircle } from "lucide-react";
+import { ShoppingCart, Heart, Share2, ArrowRightLeft, ShieldCheck, CreditCard, Plus, Minus, Star, MessageCircle, Trash2 } from "lucide-react";
 import ProductCard from "../components/ProductCard";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
@@ -26,6 +26,7 @@ export default function ProductDetail() {
   const [reviews, setReviews] = useState([]);
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [confirmDeleteReviewId, setConfirmDeleteReviewId] = useState(null);
 
   useEffect(() => {
     // Fetch product details
@@ -96,7 +97,7 @@ export default function ProductDetail() {
     return () => clearInterval(countdown);
   }, []);
 
-  const handleQuantityChange = (newQty) => {
+  const handleQuantityChange = async (newQty) => {
     if (cartItem) {
         if (newQty < 1) {
             removeFromCart(cartIndex);
@@ -104,7 +105,24 @@ export default function ProductDetail() {
             updateQuantity(cartIndex, newQty);
         }
     } else {
-        setQuantity(Math.max(1, newQty));
+        // If clicking '+' and not in cart, automatically add it to cart
+        if (newQty > quantity) {
+            if (!currentUser) {
+                navigate("/login");
+                return;
+            }
+            setAdding(true);
+            await addToCart({
+                id: productId,
+                title: product.name,
+                price: product.price,
+                image: Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : (product.image || 'https://via.placeholder.com/150'),
+                category: product.category?.name || product.category || 'Uncategorized'
+            }, newQty);
+            setAdding(false);
+        } else {
+            setQuantity(Math.max(1, newQty));
+        }
     }
   };
 
@@ -118,13 +136,31 @@ export default function ProductDetail() {
     try {
       const res = await productService.addProductReview(product._id || product.id, reviewForm);
       showToast("Review submitted successfully!", "success");
-      setReviews([res.data, ...reviews]);
+      const newReview = { ...res.data };
+      if (!newReview.user || typeof newReview.user === 'string') {
+        newReview.user = currentUser;
+      }
+      setReviews([newReview, ...reviews]);
       setReviewForm({ rating: 5, comment: "" });
     } catch (err) {
       console.error(err);
       showToast(err.response?.data?.message || err.message || "Failed to submit review", "error");
     } finally {
       setSubmittingReview(false);
+    }
+  };
+
+  const handleDeleteReview = async () => {
+    if (!confirmDeleteReviewId) return;
+    try {
+      await productService.deleteProductReview(productId, confirmDeleteReviewId);
+      setReviews(reviews.filter(r => (r._id || r.id) !== confirmDeleteReviewId));
+      showToast("Review deleted successfully!", "success");
+    } catch (err) {
+      console.error(err);
+      showToast(err.response?.data?.message || err.message || "Failed to delete review", "error");
+    } finally {
+      setConfirmDeleteReviewId(null);
     }
   };
 
@@ -366,31 +402,41 @@ export default function ProductDetail() {
                   <p className="text-slate-500">No reviews yet. Be the first to review this product!</p>
                 ) : (
                   <div className="grid gap-6">
-                    {reviews.map((review) => (
+                    {reviews.map((review) => {
+                      const reviewerName = review.user?.name || review.userName || (review.user ? `${review.user?.firstName || ''} ${review.user?.lastName || ''}`.trim() : null) || 'User';
+                      return (
                       <div key={review._id || review.id} className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex gap-4">
                         <div className="w-12 h-12 bg-slate-200 rounded-full flex-shrink-0 flex items-center justify-center text-slate-600 font-bold text-lg overflow-hidden">
                           {review.user?.avatar && review.user.avatar !== 'no-photo.jpg' ? (
-                            <img src={review.user.avatar} alt={review.user?.name || 'User'} className="w-full h-full object-cover" />
+                            <img src={review.user.avatar} alt={reviewerName} className="w-full h-full object-cover" />
                           ) : (
-                            (review.user?.name?.[0] || 'U').toUpperCase()
+                            (reviewerName[0] || 'U').toUpperCase()
                           )}
                         </div>
                         <div className="flex-1 space-y-2">
                           <div className="flex justify-between items-start">
                             <div>
-                              <h4 className="font-bold text-slate-900">{review.user?.name || 'User'}</h4>
+                              <h4 className="font-bold text-slate-900">{reviewerName}</h4>
                               <span className="text-xs text-slate-400">{new Date(review.createdAt).toLocaleDateString()}</span>
                             </div>
-                            <div className="flex text-amber-400">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Star key={star} size={14} className={star <= review.rating ? "fill-current" : "text-slate-200"} />
-                              ))}
+                            <div className="flex flex-col items-end gap-2">
+                              <div className="flex text-amber-400">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <Star key={star} size={14} className={star <= review.rating ? "fill-current" : "text-slate-200"} />
+                                ))}
+                              </div>
+                              {currentUser && (currentUser._id === review.user?._id || currentUser.id === review.user?.id || currentUser.id === review.user || currentUser._id === review.user) && (
+                                <button onClick={() => setConfirmDeleteReviewId(review._id || review.id)} className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1">
+                                  <Trash2 size={12} /> Delete
+                                </button>
+                              )}
                             </div>
                           </div>
                           <p className="text-slate-600">{review.comment}</p>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -455,6 +501,35 @@ export default function ProductDetail() {
           ))}
         </div>
       </div>
+      {/* Custom Delete Confirmation Modal */}
+      {confirmDeleteReviewId && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 space-y-6 shadow-xl transform scale-100 transition-transform">
+            <div className="space-y-2 text-center">
+              <div className="mx-auto w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
+                <Trash2 size={24} />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900">Delete Review?</h3>
+              <p className="text-slate-500 text-sm">Are you sure you want to delete this review? This action cannot be undone.</p>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button 
+                onClick={() => setConfirmDeleteReviewId(null)}
+                className="flex-1 px-4 py-2.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleDeleteReview}
+                className="flex-1 px-4 py-2.5 rounded-xl font-bold text-white bg-red-500 hover:bg-red-600 transition-colors shadow-sm shadow-red-500/20"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

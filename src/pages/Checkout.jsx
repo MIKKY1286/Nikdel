@@ -9,7 +9,7 @@ import paymentService from "../services/payment.service";
 const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
 
 export default function Checkout() {
-  const { currentUser } = useAuth();
+  const { currentUser, addAddress } = useAuth();
   const { cart, placeOrder, cartTotal, orders } = useCart();
   const { formatPrice, settings, exchangeRates } = useSettings();
   const location = useLocation();
@@ -53,6 +53,7 @@ export default function Checkout() {
   const [processing, setProcessing] = useState(false);
   const [successOrder, setSuccessOrder] = useState(null);
   const [error, setError] = useState("");
+  const [saveNewAddress, setSaveNewAddress] = useState(true);
 
   if (cart.length === 0 && !successOrder) {
     return (
@@ -120,6 +121,21 @@ export default function Checkout() {
     setProcessing(true);
 
     try {
+      if (selectedAddressId === "new" && saveNewAddress && currentUser) {
+        try {
+          await addAddress({
+            fullName: shippingDetails.fullName,
+            street: shippingDetails.address,
+            city: shippingDetails.city,
+            zipCode: shippingDetails.zipCode,
+            country: shippingDetails.country,
+            phone: shippingDetails.phone,
+            isDefault: !currentUser.addresses || currentUser.addresses.length === 0
+          });
+        } catch (err) {
+          console.error("Failed to save address:", err);
+        }
+      }
       // 1. Create order on backend first (cart is cleared upon success)
       const order = await placeOrder(shippingDetails, null, discountAmount, appliedPromo);
       if (!order) {
@@ -200,16 +216,20 @@ export default function Checkout() {
         <div className="bg-slate-50 rounded-2xl p-6 text-left border border-slate-100 space-y-3.5 text-xs">
           <div className="flex justify-between font-bold border-b border-slate-200/50 pb-2">
             <span className="text-slate-500 font-semibold uppercase tracking-wider">Order ID</span>
-            <span className="text-slate-900 font-mono select-all">{successOrder.id}</span>
+            <span className="text-slate-900 font-mono select-all">
+              {successOrder._id || successOrder.id || successOrder.orderNumber || "Processing"}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-slate-400 font-semibold">Recipient Name</span>
-            <span className="text-slate-700 font-bold">{successOrder.shippingDetails.fullName}</span>
+            <span className="text-slate-700 font-bold">
+              {successOrder.shippingDetails?.fullName || successOrder.shippingAddress?.fullName || currentUser?.name || "Customer"}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-slate-400 font-semibold">Delivery Address</span>
-            <span className="text-slate-700 font-bold max-w-[240px] truncate text-right" title={successOrder.shippingDetails.address}>
-              {successOrder.shippingDetails.address}, {successOrder.shippingDetails.city}
+            <span className="text-slate-700 font-bold max-w-[240px] truncate text-right" title={successOrder.shippingDetails?.address || successOrder.shippingAddress?.address || "Address"}>
+              {successOrder.shippingDetails?.address || successOrder.shippingAddress?.street || successOrder.shippingAddress?.address || "Saved Address"}, {successOrder.shippingDetails?.city || successOrder.shippingAddress?.city || ""}
             </span>
           </div>
           <div className="flex justify-between font-extrabold text-slate-950 border-t border-slate-200/50 pt-3">
@@ -356,6 +376,21 @@ export default function Checkout() {
                 />
               </div>
             </div>
+
+            {selectedAddressId === "new" && currentUser && (
+              <div className="flex items-center gap-2 mt-4">
+                <input
+                  type="checkbox"
+                  id="save-address"
+                  checked={saveNewAddress}
+                  onChange={(e) => setSaveNewAddress(e.target.checked)}
+                  className="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500"
+                />
+                <label htmlFor="save-address" className="text-sm text-slate-700 cursor-pointer">
+                  Save this address to my profile for future orders
+                </label>
+              </div>
+            )}
           </div>
 
           {/* Secure Payment Gateway */}
@@ -399,18 +434,27 @@ export default function Checkout() {
 
           {/* Cart items list summary */}
           <div className="divide-y divide-slate-100 max-h-60 overflow-y-auto pr-1">
-            {cart.map((item, index) => (
-              <div key={item.id + "-" + index} className="py-3 flex items-center justify-between text-xs">
-                <div className="flex gap-2.5 items-center truncate pr-3">
-                  <img src={item.image} alt="" className="w-8 h-8 rounded object-cover shrink-0 bg-slate-50" crossOrigin="anonymous" />
-                  <span className="font-bold text-slate-700 truncate">{item.title}</span>
-                  <span className="text-slate-400">x{item.quantity || 1}</span>
+            {cart.map((item, index) => {
+              const itemProduct = item.product || item;
+              const itemTitle = itemProduct.name || itemProduct.title || item.title || "Product";
+              const itemImage = Array.isArray(itemProduct.images) && itemProduct.images.length > 0 
+                ? itemProduct.images[0] 
+                : (itemProduct.image || item.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150&q=60");
+              const itemPrice = itemProduct.price || item.price || 0;
+              
+              return (
+                <div key={(itemProduct.id || itemProduct._id || index) + "-" + index} className="py-3 flex items-center justify-between text-xs">
+                  <div className="flex gap-2.5 items-center truncate pr-3">
+                    <img src={itemImage} alt="" className="w-8 h-8 rounded object-cover shrink-0 bg-slate-50 border border-slate-100" crossOrigin="anonymous" />
+                    <span className="font-bold text-slate-700 truncate">{itemTitle}</span>
+                    <span className="text-slate-400">x{item.quantity || 1}</span>
+                  </div>
+                  <span className="font-semibold text-slate-800 shrink-0">
+                    {formatPrice(itemPrice * (item.quantity || 1))}
+                  </span>
                 </div>
-                <span className="font-semibold text-slate-800 shrink-0">
-                  {formatPrice(item.price * (item.quantity || 1))}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Pricing breakdowns */}

@@ -73,7 +73,7 @@ export function CartProvider({ children }) {
   }, [currentUser]);
 
   // Add to Cart
-  const addToCart = async (product) => {
+  const addToCart = async (product, quantity = 1) => {
     if (!currentUser) {
       showToast("Please sign in to add items to your cart!", "warning");
       return false;
@@ -82,7 +82,7 @@ export function CartProvider({ children }) {
     try {
       const response = await api.post("/cart/items", { 
         productId: product.id || product._id, 
-        quantity: 1 
+        quantity: quantity 
       });
       const updatedCart = response.data?.data || response.data;
       

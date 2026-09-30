@@ -133,13 +133,13 @@ export default function ProductCard({ product }) {
         </h3>
 
         {/* Price and CTA */}
-        <div className="mt-auto pt-4 border-t border-slate-50 flex items-center justify-between">
-          <div className="flex flex-col">
-            <span className="text-xl font-black text-slate-900 leading-none">
+        <div className="mt-auto pt-4 border-t border-slate-50 flex items-center justify-between gap-2">
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="text-lg sm:text-xl font-black text-slate-900 leading-none truncate" title={formatPrice(product.price)}>
               {formatPrice(product.price)}
             </span>
             {product.oldPrice && (
-              <span className="text-xs text-slate-400 line-through font-semibold mt-1">
+              <span className="text-xs text-slate-400 line-through font-semibold mt-1 truncate">
                 {formatPrice(product.oldPrice)}
               </span>
             )}

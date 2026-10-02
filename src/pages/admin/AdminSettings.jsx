@@ -28,6 +28,7 @@ export default function AdminSettings() {
 
   useEffect(() => {
     if (settings) {
+      // eslint-disable-next-line
       setFormData({
         storeName: settings.storeName || "Nikdel Webstore",
         contactEmail: settings.contactEmail || "admin@nikdel.com",

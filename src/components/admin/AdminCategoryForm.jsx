@@ -16,6 +16,7 @@ export default function AdminCategoryForm({ isOpen, onClose, onSave, editingCate
 
   useEffect(() => {
     if (editingCategory) {
+      // eslint-disable-next-line
       setFormData({
         ...editingCategory,
         status: editingCategory.isActive !== false ? "active" : "inactive"

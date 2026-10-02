@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { LayoutDashboard, ShoppingBag, Download, MapPin, User, Heart, ArrowRightLeft, LogOut } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, MapPin, User, Heart, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function AccountLayout() {

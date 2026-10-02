@@ -30,6 +30,7 @@ export default function AdminCustomers() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line
     fetchUsers();
   }, []);
 

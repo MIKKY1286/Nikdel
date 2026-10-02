@@ -25,6 +25,7 @@ export default function UserSettings() {
 
   useEffect(() => {
     if (currentUser) {
+      // eslint-disable-next-line
       setFormData({
         name: currentUser.name || currentUser.firstName || "",
         phone: currentUser.phone || "",

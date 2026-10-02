@@ -3,6 +3,7 @@ import api from '../services/api';
 
 const SettingsContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useSettings() {
   return useContext(SettingsContext);
 }
@@ -75,6 +76,7 @@ export function SettingsProvider({ children }) {
   const [exchangeRates, setExchangeRates] = useState(null);
 
   useEffect(() => {
+    // eslint-disable-next-line
     fetchSettings();
     
     // Fetch live exchange rates

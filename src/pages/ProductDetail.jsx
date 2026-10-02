@@ -425,7 +425,7 @@ export default function ProductDetail() {
                                   <Star key={star} size={14} className={star <= review.rating ? "fill-current" : "text-slate-200"} />
                                 ))}
                               </div>
-                              {currentUser && (currentUser._id === review.user?._id || currentUser.id === review.user?.id || currentUser.id === review.user || currentUser._id === review.user) && (
+                              {currentUser && (currentUser.role === 'admin' || currentUser._id === review.user?._id || currentUser.id === review.user?.id || currentUser.id === review.user || currentUser._id === review.user) && (
                                 <button onClick={() => setConfirmDeleteReviewId(review._id || review.id)} className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1">
                                   <Trash2 size={12} /> Delete
                                 </button>

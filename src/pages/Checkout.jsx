@@ -3,7 +3,7 @@ import { useLocation, Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useSettings } from "../context/SettingsContext";
-import { CreditCard, Truck, ClipboardList, CheckCircle, ArrowRight, Loader } from "lucide-react";
+import { CreditCard, Truck, ClipboardList, CheckCircle, ArrowRight, Loader, Printer, MessageCircle, Building2, ShieldCheck } from "lucide-react";
 import paymentService from "../services/payment.service";
 
 const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
@@ -238,18 +238,37 @@ export default function Checkout() {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 pt-2">
+        {/* Quick Action Buttons */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <button
+            onClick={() => window.print()}
+            className="flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-bold py-3.5 px-4 rounded-xl transition-all shadow-sm"
+          >
+            <Printer size={16} />
+            <span>Print Receipt</span>
+          </button>
+          
+          <a
+            href={`https://wa.me/${settings?.whatsappNumber || "2349075793786"}?text=${encodeURIComponent(`Hello Nikdel Dispatch, I just placed order #${successOrder._id || successOrder.id || successOrder.orderNumber}. I would like to verify delivery scheduling.`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md shadow-emerald-600/20"
+          >
+            <MessageCircle size={16} />
+            <span>Chat on WhatsApp</span>
+          </a>
+
           <Link
             to="/orders"
-            className="flex-1 bg-slate-900 hover:bg-brand-650 text-white font-bold py-4 rounded-xl transition-all shadow-md shadow-slate-900/10"
+            className="sm:col-span-2 bg-slate-900 hover:bg-brand-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-md shadow-slate-900/10 text-center"
           >
             Track Order History
           </Link>
           <Link
             to="/shop"
-            className="flex-1 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold py-4 rounded-xl transition-all"
+            className="sm:col-span-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-all text-center text-xs"
           >
-            Continue Shopping
+            ← Continue Shopping
           </Link>
         </div>
       </div>
@@ -304,7 +323,7 @@ export default function Checkout() {
                 <input
                   type="text"
                   name="fullName"
-                  placeholder="John Doe"
+                  placeholder="e.g. Adebayo Adeleke"
                   value={shippingDetails.fullName}
                   onChange={handleInputChange}
                   required
@@ -317,7 +336,7 @@ export default function Checkout() {
                 <input
                   type="text"
                   name="address"
-                  placeholder="Apartment, suite, unit, 123 Main St"
+                  placeholder="House/Plot number, Street, Area (e.g. Ring Road, Bodija)"
                   value={shippingDetails.address}
                   onChange={handleInputChange}
                   required
@@ -330,7 +349,7 @@ export default function Checkout() {
                 <input
                   type="text"
                   name="city"
-                  placeholder="New York"
+                  placeholder="e.g. Ibadan"
                   value={shippingDetails.city}
                   onChange={handleInputChange}
                   required
@@ -339,12 +358,12 @@ export default function Checkout() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-500">ZIP / Postal Code</label>
+                <label className="text-xs font-bold text-slate-500">State / Province</label>
                 <input
                   type="text"
-                  name="zipCode"
-                  placeholder="10001 (Optional)"
-                  value={shippingDetails.zipCode}
+                  name="state"
+                  placeholder="e.g. Oyo State"
+                  value={shippingDetails.state || ""}
                   onChange={handleInputChange}
                   className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                 />
@@ -355,7 +374,7 @@ export default function Checkout() {
                 <input
                   type="text"
                   name="country"
-                  placeholder="United States"
+                  placeholder="Nigeria"
                   value={shippingDetails.country}
                   onChange={handleInputChange}
                   required
@@ -368,7 +387,7 @@ export default function Checkout() {
                 <input
                   type="tel"
                   name="phone"
-                  placeholder="+1 (555) 000-0000"
+                  placeholder="e.g. 0907 579 3786"
                   value={shippingDetails.phone}
                   onChange={handleInputChange}
                   required
@@ -400,21 +419,75 @@ export default function Checkout() {
               2. Payment Method
             </h3>
 
-            <div className="border border-brand-100 bg-brand-50/20 rounded-xl p-4.5 flex items-start gap-3 border-dashed">
-              <input
-                type="radio"
-                id="paystack-option"
-                name="paymentMethod"
-                checked={true}
-                readOnly
-                className="mt-1 accent-brand-600"
-              />
-              <label htmlFor="paystack-option" className="cursor-pointer select-none">
-                <span className="font-bold text-slate-900 text-sm block">Paystack Secure Checkout</span>
-                <span className="text-xs text-slate-400 mt-1 block leading-relaxed">
-                  Pay securely using Credit/Debit card, Bank, USSD, or Mobile Money. Amount will be processed in NGN (Rate: 1 USD = {exchangeRates?.NGN ? Math.round(exchangeRates.NGN) : 1600} NGN).
-                </span>
-              </label>
+            <div className="border border-brand-200 bg-brand-50/30 rounded-2xl p-5 space-y-4">
+              <div className="flex items-start gap-3">
+                <input
+                  type="radio"
+                  id="paystack-option"
+                  name="paymentMethod"
+                  checked={true}
+                  readOnly
+                  className="mt-1 accent-brand-600"
+                />
+                <label htmlFor="paystack-option" className="cursor-pointer select-none flex-1">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-extrabold text-slate-900 text-sm">Paystack Bank-Grade Checkout</span>
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                      <ShieldCheck size={12} /> 256-bit Encrypted
+                    </span>
+                  </div>
+                  <span className="text-xs text-slate-500 mt-1 block leading-relaxed">
+                    Pay securely using Debit/Credit Card (Mastercard, Visa, Verve), Direct Bank Transfer, or USSD.
+                  </span>
+                </label>
+              </div>
+
+              {/* Verified Payment Badges */}
+              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-brand-100/60">
+                {/* Paystack */}
+                <div className="bg-white px-2 py-1 rounded-md h-6 flex items-center justify-center shadow-xs border border-slate-200/60">
+                  <div className="flex items-center gap-1">
+                    <svg viewBox="0 0 16 16" className="w-3 h-3" fill="none">
+                      <rect x="1" y="2.5" width="14" height="2" rx="1" fill="#00C3F7"/>
+                      <rect x="1" y="6.5" width="9" height="2" rx="1" fill="#00C3F7"/>
+                      <rect x="1" y="10.5" width="14" height="2" rx="1" fill="#00C3F7"/>
+                    </svg>
+                    <span className="text-[10px] font-extrabold text-[#011B33]">paystack</span>
+                  </div>
+                </div>
+
+                {/* Verve */}
+                <div className="bg-white px-2 py-1 rounded-md h-6 flex items-center justify-center shadow-xs border border-slate-200/60">
+                  <div className="flex items-center gap-1">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#E51B24] flex items-center justify-center">
+                      <div className="w-1 h-1 rounded-full bg-white"></div>
+                    </div>
+                    <span className="text-[10px] font-black italic text-[#002D62]">verve</span>
+                  </div>
+                </div>
+
+                {/* Mastercard */}
+                <div className="bg-white px-2 py-1 rounded-md h-6 flex items-center justify-center shadow-xs border border-slate-200/60">
+                  <svg viewBox="0 0 34 20" className="h-3.5 w-auto">
+                    <circle cx="11" cy="10" r="9" fill="#EB001B"/>
+                    <circle cx="23" cy="10" r="9" fill="#F79E1B"/>
+                    <path d="M17 3.8a9 9 0 000 12.4 9 9 0 000-12.4z" fill="#FF5F00"/>
+                  </svg>
+                </div>
+
+                {/* Visa */}
+                <div className="bg-white px-2 py-1 rounded-md h-6 flex items-center justify-center shadow-xs border border-slate-200/60">
+                  <span className="font-black italic text-[11px] tracking-wider text-[#1A1F71] font-sans">VISA</span>
+                </div>
+
+                {/* Bank Transfer */}
+                <div className="bg-white px-2 py-1 rounded-md h-6 flex items-center justify-center shadow-xs border border-slate-200/60">
+                  <div className="flex items-center gap-1 text-slate-800">
+                    <Building2 size={11} className="text-emerald-600" />
+                    <span className="text-[9px] font-extrabold tracking-tight text-slate-800">Bank Transfer</span>
+                  </div>
+                </div>
+              </div>
             </div>
             
             {PAYSTACK_PUBLIC_KEY === "pk_test_YOUR_PAYSTACK_KEY" && (
@@ -439,7 +512,7 @@ export default function Checkout() {
               const itemTitle = itemProduct.name || itemProduct.title || item.title || "Product";
               const itemImage = Array.isArray(itemProduct.images) && itemProduct.images.length > 0 
                 ? itemProduct.images[0] 
-                : (itemProduct.image || item.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150&q=60");
+                : (itemProduct.image || item.image || "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=150&q=60");
               const itemPrice = itemProduct.price || item.price || 0;
               
               return (

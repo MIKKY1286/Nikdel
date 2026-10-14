@@ -96,7 +96,7 @@ export default function Login({ isAdmin = false }) {
             alt="Nikdel Logo" 
             className="w-10 h-10 rounded-xl object-cover border border-brand-500/30" 
           />
-          <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-brand-300 to-brand-100 bg-clip-text text-trans ent">
+          <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-brand-300 to-brand-100 bg-clip-text text-transparent">
             Nikdel {isActuallyAdmin && "Admin"}
           </span>
         </div>

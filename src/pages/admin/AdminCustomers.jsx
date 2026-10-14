@@ -3,6 +3,7 @@ import { Plus, Search, Edit, Trash2, Mail } from "lucide-react";
 import adminService from "../../services/admin.service";
 import AdminCustomerForm from "../../components/admin/AdminCustomerForm";
 import { useToast } from "../../context/ToastContext";
+import { useSettings } from "../../context/SettingsContext";
 
 export default function AdminCustomers() {
   const [customers, setCustomers] = useState([]);
@@ -11,6 +12,7 @@ export default function AdminCustomers() {
   const [editingCustomer, setEditingCustomer] = useState(null);
 
   const { showToast } = useToast();
+  const { formatPrice } = useSettings();
 
   const fetchUsers = async () => {
     try {
@@ -134,7 +136,7 @@ export default function AdminCustomers() {
                     </div>
                   </td>
                   <td className="px-6 py-4 font-semibold text-slate-700">{customer.totalOrders}</td>
-                  <td className="px-6 py-4 font-extrabold text-slate-900">${customer.totalSpent.toFixed(2)}</td>
+                  <td className="px-6 py-4 font-extrabold text-slate-900">{formatPrice(customer.totalSpent)}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                       customer.status === 'active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :

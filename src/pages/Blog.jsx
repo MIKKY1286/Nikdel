@@ -68,7 +68,7 @@ export default function Blog() {
         <div className="relative z-10 space-y-6 max-w-2xl mx-auto flex flex-col items-center">
           <div className="space-y-4">
             <h1 className="text-4xl sm:text-5xl font-extrabold">NIKDEL Blog</h1>
-            <p className="text-slate-300">Insights, news, and tips from the world of e-commerce and daily living.</p>
+            <p className="text-slate-300">Expert contractor guides, machinery maintenance tips, and building material advice.</p>
           </div>
           {currentUser && (
             <button 
@@ -97,7 +97,7 @@ export default function Blog() {
             <article key={post._id || post.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden hover:shadow-xl transition-all group flex flex-col">
               <div className="h-48 overflow-hidden bg-slate-100">
                 <img 
-                  src={post.coverImage && post.coverImage !== 'no-photo.jpg' ? post.coverImage : 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&auto=format&fit=crop&q=60'} 
+                  src={post.coverImage && post.coverImage !== 'no-photo.jpg' ? post.coverImage : 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&auto=format&fit=crop&q=60'} 
                   alt={post.title} 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                 />

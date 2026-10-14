@@ -24,7 +24,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   
   const { currentUser } = useAuth();
-  const { settings } = useSettings();
+  const { settings, formatPrice } = useSettings();
   const { orders } = useCart();
   const [claimed, setClaimed] = useState(
     localStorage.getItem("nikdel_welcome_claimed") === "true" || (currentUser && orders && orders.length > 0)
@@ -42,48 +42,36 @@ export default function Home() {
       title: "Construction & Heavy Machinery",
       desc: "Get the best deals on heavy-duty power tools, cement mixers, and construction equipment from top brands.",
       badge: "Mega Sale",
-      price: "$199.99",
-      oldPrice: "$250.00",
       image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?auto=format&fit=crop&q=80&w=1000"
     },
     {
       title: "Premium Finishing & Decor Options",
       desc: "Showcase your home with premium quality paints from Value Paint, tiles, doors, and flooring options.",
       badge: "Top Picks",
-      price: "$45.99",
-      oldPrice: "$65.00",
       image: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&q=80&w=1000"
     },
     {
       title: "Jubaili Agrotec Farming Essentials",
       desc: "Top quality sprayers, farm chemicals, insecticides, and wheelbarrows for all your agricultural needs.",
       badge: "Agro Deals",
-      price: "$89.99",
-      oldPrice: "$120.00",
       image: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=1000"
     },
     {
       title: "Durable Roofing & Canopies",
       desc: "Protect your property with our premium durable roofing solutions, structural timber, and outdoor canopies.",
       badge: "New Arrival",
-      price: "$299.99",
-      oldPrice: "$400.00",
       image: "https://images.unsplash.com/photo-1628744448840-55bdb2497bd4?auto=format&fit=crop&q=80&w=1000"
     },
     {
       title: "Premium Upholstery & Furniture Materials",
       desc: "High-quality leather materials for chair making, chair castors, and furniture fittings.",
       badge: "Best Sellers",
-      price: "$15.99",
-      oldPrice: "$25.00",
       image: "https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&q=80&w=1000"
     },
     {
       title: "Hardware, Adhesives & Fasteners",
       desc: "Essential carpentry glue (Top Bond), hand tools, nails, plumbing, and electrical fittings.",
       badge: "Essentials",
-      price: "$9.99",
-      oldPrice: "$15.00",
       image: "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&q=80&w=1000"
     }
   ];
@@ -195,7 +183,15 @@ export default function Home() {
                     {slide.desc}
                   </p>
                   
-
+                  <div className="pt-2">
+                    <Link
+                      to="/shop"
+                      className="inline-flex items-center gap-2 bg-slate-900 hover:bg-brand-600 text-white font-bold text-sm px-6 py-3.5 rounded-xl transition-all shadow-md group"
+                    >
+                      <span>Explore Catalog</span>
+                      <ArrowRight size={16} className="transform transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </div>
                 </div>
                 
                 {/* Banner Image Right */}
@@ -222,14 +218,14 @@ export default function Home() {
 
       {/* Feature Icons Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 pt-8">
           {[
-            { title: "Payment only online", desc: "Secure, seamless online checkout using multiple supported payment methods.", icon: "bg-amber-100 border-amber-300" },
-            { title: "New stocks and sales", desc: "Regular updates on our inventory with exciting new products and seasonal sales.", icon: "bg-blue-100 border-blue-300" },
-            { title: "Quality assurance", desc: "All our products undergo strict quality checks to ensure you get the best.", icon: "bg-orange-100 border-orange-300" },
-            { title: "Delivery from 1 hour", desc: "Lightning fast delivery services directly to your doorstep in record time.", icon: "bg-emerald-100 border-emerald-300" }
+            { title: "Nationwide Logistics", desc: "Fast delivery in Ibadan and prompt dispatch across all Nigerian states.", icon: "bg-amber-100 border-amber-300" },
+            { title: "Certified Genuine", desc: "Directly sourced from trusted brands: Total, Bosch, DeWalt & Jubaili Agrotec.", icon: "bg-blue-100 border-blue-300" },
+            { title: "Paystack Encrypted", desc: "Bank-grade safe payments via Paystack, Verve, Mastercard, Visa & Transfers.", icon: "bg-orange-100 border-orange-300" },
+            { title: "Direct WhatsApp Support", desc: "Immediate assistance, contractor bulk pricing, and personalized service.", icon: "bg-emerald-100 border-emerald-300" }
           ].map((feat, index) => (
-            <div key={index} className="flex gap-4 items-start">
+            <div key={index} className="flex gap-4 items-start p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
               <div className="w-10 h-10 shrink-0 relative mt-1">
                  <div className={`absolute -bottom-1 -left-1 w-8 h-8 rounded-full ${feat.icon} opacity-50`}></div>
                  <div className="relative w-8 h-8 border-2 border-slate-800 rounded text-slate-800 flex items-center justify-center font-bold text-xs bg-white">
@@ -418,7 +414,7 @@ export default function Home() {
             <div>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
                 <Link to="/shop" className="bg-brand-600 hover:bg-brand-700 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-md">
-                  Claim Offer - $349.99
+                  Claim Offer - {formatPrice(349.99)}
                 </Link>
               </motion.div>
             </div>
@@ -455,7 +451,7 @@ export default function Home() {
             <img src="/topbond_brand_logo.png" alt="TOP BOND" className="max-h-full max-w-full object-contain" />
           </div>
           <div className="h-24 flex items-center justify-center p-4 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
-            <img src="/jubaili_brand_logo.png" alt="JUBAILI AGROTEC" className="max-h-full max-w-full object-contain" />
+            <img src="/jubaili_brand_logo.svg" alt="JUBAILI AGROTEC" className="max-h-full max-w-full object-contain" />
           </div>
         </div>
       </motion.section>

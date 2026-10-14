@@ -4,9 +4,11 @@ import productService from "../../services/product.service";
 import AdminProductForm from "../../components/admin/AdminProductForm";
 import { useToast } from "../../context/ToastContext";
 import { useSearchParams } from "react-router-dom";
+import { useSettings } from "../../context/SettingsContext";
 
 export default function AdminProducts() {
   const { showToast } = useToast();
+  const { formatPrice } = useSettings();
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -150,7 +152,7 @@ export default function AdminProducts() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-slate-600 font-medium">{product.category?.name || product.category}</td>
-                    <td className="px-6 py-4 font-bold text-slate-900">${(product.price || 0).toFixed(2)}</td>
+                    <td className="px-6 py-4 font-bold text-slate-900">{formatPrice(product.price || 0)}</td>
                     <td className="px-6 py-4">
                       <span className={`font-bold ${product.stock < 10 ? 'text-rose-500' : 'text-slate-600'}`}>
                         {product.stock} units

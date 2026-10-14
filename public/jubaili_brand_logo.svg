@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="300" height="80">
+  <rect width="100%" height="100%" fill="none" />
+  <g transform="translate(10, 15)">
+    <!-- Leaf / Seed emblem -->
+    <path d="M 25 5 C 10 20 10 38 25 50 C 40 38 40 20 25 5 Z" fill="#15803d" />
+    <path d="M 25 15 L 25 45 M 25 25 Q 18 20 15 25 M 25 35 Q 32 30 35 35" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none" />
+    <!-- Brand text -->
+    <text x="55" y="32" font-family="'Montserrat', sans-serif, system-ui" font-weight="900" font-size="22" fill="#0f172a" letter-spacing="1.5">JUBAILI</text>
+    <text x="55" y="47" font-family="'Montserrat', sans-serif, system-ui" font-weight="800" font-size="12" fill="#16a34a" letter-spacing="3">AGROTEC</text>
+  </g>
+</svg>

@@ -10,9 +10,11 @@ import {
 } from "lucide-react";
 import { useToast } from "../../context/ToastContext";
 import adminService from "../../services/admin.service";
+import { useSettings } from "../../context/SettingsContext";
 
 export default function AdminOrders() {
   const { showToast } = useToast();
+  const { formatPrice } = useSettings();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
@@ -187,7 +189,7 @@ export default function AdminOrders() {
                           {formattedDate}
                         </td>
                         <td className="px-6 py-4 text-right font-extrabold text-slate-900">
-                          ${parseFloat(order.total).toFixed(2)}
+                          {formatPrice(order.total)}
                         </td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center border px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${getStatusBadge(order.orderStatus)}`}>
@@ -287,7 +289,7 @@ export default function AdminOrders() {
                                         <span className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">{item.category}</span>
                                       </div>
                                       <div className="text-right shrink-0">
-                                        <span className="font-bold text-slate-800 block">${parseFloat(item.price).toFixed(2)}</span>
+                                        <span className="font-bold text-slate-800 block">{formatPrice(item.price)}</span>
                                         <span className="text-[9px] font-bold text-slate-400">Qty: {item.quantity || 1}</span>
                                       </div>
                                     </div>
@@ -297,25 +299,25 @@ export default function AdminOrders() {
                                   <div className="border-t border-slate-100 pt-3 mt-2 space-y-1.5 font-semibold text-slate-500 text-[10px]">
                                     <div className="flex justify-between">
                                       <span>Subtotal</span>
-                                      <span className="text-slate-800">${parseFloat(order.subtotal || order.total).toFixed(2)}</span>
+                                      <span className="text-slate-800">{formatPrice(order.subtotal || order.total)}</span>
                                     </div>
                                     {order.discountAmount > 0 && (
                                       <div className="flex justify-between text-emerald-600">
                                         <span>Promo ({order.appliedPromo})</span>
-                                        <span>-${parseFloat(order.discountAmount).toFixed(2)}</span>
+                                        <span>-{formatPrice(order.discountAmount)}</span>
                                       </div>
                                     )}
                                     <div className="flex justify-between">
                                       <span>Tax (8%)</span>
-                                      <span className="text-slate-800">${parseFloat(order.tax || 0).toFixed(2)}</span>
+                                      <span className="text-slate-800">{formatPrice(order.tax || 0)}</span>
                                     </div>
                                     <div className="flex justify-between">
                                       <span>Shipping Fee</span>
-                                      <span className="text-slate-800">{order.shipping === 0 ? "FREE" : `$${parseFloat(order.shipping).toFixed(2)}`}</span>
+                                      <span className="text-slate-800">{order.shipping === 0 ? "FREE" : formatPrice(order.shipping)}</span>
                                     </div>
                                     <div className="flex justify-between font-extrabold text-slate-900 border-t border-slate-100 pt-2 text-xs">
                                       <span>Grand Total</span>
-                                      <span>${parseFloat(order.total).toFixed(2)}</span>
+                                      <span>{formatPrice(order.total)}</span>
                                     </div>
                                   </div>
                                 </div>

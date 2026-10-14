@@ -33,6 +33,7 @@ import Trending from "./pages/Trending";
 import Sale from "./pages/Sale";
 import Wishlist from "./pages/Wishlist";
 import PolicyPage from "./pages/PolicyPage";
+import NotFound from "./pages/NotFound";
 
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
@@ -138,6 +139,9 @@ function App() {
                     <Route path="addresses" element={<Addresses />} />
                   </Route>
                 </Route>
+
+                {/* 404 Catch-All Page */}
+                <Route path="*" element={<NotFound />} />
               </Route>
 
               {/* Auth Routes (no Header and Footer) */}

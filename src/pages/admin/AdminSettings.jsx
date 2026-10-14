@@ -11,10 +11,14 @@ export default function AdminSettings() {
 
   const [formData, setFormData] = useState({
     storeName: "Nikdel Webstore",
-    contactEmail: "admin@nikdel.com",
-    storeDescription: "Premium building materials and agriculture webstore.",
-    currency: "USD",
-    timezone: "(GMT+00:00) London",
+    contactEmail: "support@nikdel.com",
+    storeDescription: "Premier destination for quality building materials, power tools, and agricultural equipment.",
+    storeAddress: "Wema Complex, Ibadan, Oyo State, Nigeria",
+    storePhone: "+234 907 579 3786",
+    whatsappNumber: "2349075793786",
+    operatingHours: "Mon - Sat: 8:00 AM - 6:00 PM (WAT)",
+    currency: "NGN",
+    timezone: "(GMT+01:00) West Africa Time (Lagos/Ibadan)",
     adminName: "",
     adminEmail: "",
     emailAlertsOrders: true,
@@ -31,10 +35,14 @@ export default function AdminSettings() {
       // eslint-disable-next-line
       setFormData({
         storeName: settings.storeName || "Nikdel Webstore",
-        contactEmail: settings.contactEmail || "admin@nikdel.com",
-        storeDescription: settings.storeDescription || "Premium building materials and agriculture webstore.",
-        currency: settings.currency || "USD",
-        timezone: settings.timezone || "(GMT+00:00) London",
+        contactEmail: settings.contactEmail || "support@nikdel.com",
+        storeDescription: settings.storeDescription || "Premier destination for quality building materials, power tools, and agricultural equipment.",
+        storeAddress: settings.storeAddress || "Wema Complex, Ibadan, Oyo State, Nigeria",
+        storePhone: settings.storePhone || "+234 907 579 3786",
+        whatsappNumber: settings.whatsappNumber || "2349075793786",
+        operatingHours: settings.operatingHours || "Mon - Sat: 8:00 AM - 6:00 PM (WAT)",
+        currency: settings.currency || "NGN",
+        timezone: settings.timezone || "(GMT+01:00) West Africa Time (Lagos/Ibadan)",
         adminName: settings.adminName || "",
         adminEmail: settings.adminEmail || "",
         emailAlertsOrders: settings.emailAlertsOrders ?? true,
@@ -169,6 +177,22 @@ export default function AdminSettings() {
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Contact Email</label>
                     <input type="email" name="contactEmail" value={formData.contactEmail} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
                   </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Store Phone Number</label>
+                    <input type="text" name="storePhone" placeholder="+234 907 579 3786" value={formData.storePhone} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">WhatsApp Business Number (digits only)</label>
+                    <input type="text" name="whatsappNumber" placeholder="2349075793786" value={formData.whatsappNumber} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Physical Store Address</label>
+                    <input type="text" name="storeAddress" placeholder="Wema Complex, Ibadan, Oyo State, Nigeria" value={formData.storeAddress} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Operating / Support Hours</label>
+                    <input type="text" name="operatingHours" placeholder="Mon - Sat: 8:00 AM - 6:00 PM (WAT)" value={formData.operatingHours} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
+                  </div>
                   <div className="space-y-2 md:col-span-2">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Store Description</label>
                     <textarea rows="3" name="storeDescription" value={formData.storeDescription} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all resize-none"></textarea>
@@ -184,18 +208,19 @@ export default function AdminSettings() {
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Store Currency</label>
                     <select name="currency" value={formData.currency} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all">
+                      <option value="NGN">Nigerian Naira (₦)</option>
                       <option value="USD">USD ($)</option>
                       <option value="EUR">EUR (€)</option>
                       <option value="GBP">GBP (£)</option>
-                      <option value="NGN">Nigerian Naira (₦)</option>
                     </select>
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Timezone</label>
                     <select name="timezone" value={formData.timezone} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all">
-                      <option value="(GMT-08:00) Pacific Time (US & Canada)">(GMT-08:00) Pacific Time (US & Canada)</option>
-                      <option value="(GMT-05:00) Eastern Time (US & Canada)">(GMT-05:00) Eastern Time (US & Canada)</option>
+                      <option value="(GMT+01:00) West Africa Time (Lagos/Ibadan)">(GMT+01:00) West Africa Time (Lagos/Ibadan)</option>
                       <option value="(GMT+00:00) London">(GMT+00:00) London</option>
+                      <option value="(GMT-05:00) Eastern Time (US & Canada)">(GMT-05:00) Eastern Time (US & Canada)</option>
+                      <option value="(GMT-08:00) Pacific Time (US & Canada)">(GMT-08:00) Pacific Time (US & Canada)</option>
                     </select>
                   </div>
                 </div>
@@ -210,11 +235,11 @@ export default function AdminSettings() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Admin Name</label>
-                    <input type="text" name="adminName" placeholder="John Doe" value={formData.adminName} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
+                    <input type="text" name="adminName" placeholder="Store Administrator" value={formData.adminName} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Admin Email</label>
-                    <input type="email" name="adminEmail" placeholder="john@nikdel.com" value={formData.adminEmail} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
+                    <input type="email" name="adminEmail" placeholder="admin@nikdel.com" value={formData.adminEmail} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all" />
                   </div>
                 </div>
               </div>

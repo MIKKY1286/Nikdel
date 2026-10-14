@@ -30,12 +30,18 @@ export default function Trending() {
           <div className="inline-flex items-center gap-2 bg-brand-500/20 text-brand-300 font-bold px-3 py-1 rounded-full text-sm">
             <TrendingUp size={16} /> Hot Right Now
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold">Trending Products</h1>
-          <p className="text-slate-300">Discover what's popular this week. Grab these highly-rated items before they run out of stock.</p>
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight">Trending Products</h1>
+          <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+            Top-demanded power tools, building supplies, and agricultural machinery trusted by contractors and builders this week.
+          </p>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-0"></div>
-        <div className="hidden md:block absolute right-0 top-0 bottom-0 w-1/2 z-0 opacity-50 mix-blend-screen">
-            <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop&q=60" alt="Trending" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/85 to-transparent z-0"></div>
+        <div className="hidden md:block absolute right-0 top-0 bottom-0 w-1/2 z-0 opacity-60">
+            <img 
+              src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=1000&auto=format&fit=crop&q=80" 
+              alt="Power Tools & Industrial Equipment" 
+              className="w-full h-full object-cover object-center mix-blend-luminosity" 
+            />
         </div>
       </div>
 

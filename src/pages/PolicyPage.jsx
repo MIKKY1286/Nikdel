@@ -7,34 +7,34 @@ export default function PolicyPage({ type }) {
     terms: {
       title: "Terms of Service",
       icon: <FileText size={32} className="text-brand-600" />,
-      date: "August 24, 2026",
+      date: " 2026",
       text: [
-        "Welcome to NIKDEL. By accessing our website, you agree to these Terms of Service.",
-        "We reserve the right to modify these terms at any time. Changes will take effect immediately upon their posting on the website.",
-        "All content, trademarks, and data on this website, including software, databases, text, graphics, icons, and hyperlinks are the property of NIKDEL.",
-        "You agree to use this site for lawful purposes only and in a way that does not infringe the rights of others."
+        "Welcome to NIKDEL. By accessing our platform or placing an order, you agree to comply with and be bound by these Terms of Service.",
+        "Product Authenticity & Pricing: All building supplies, power tools, paints, and agricultural materials listed are verified authentic products from certified manufacturers. Prices are clearly confirmed at checkout.",
+        "Order Fulfillment & Delivery: Deliveries within Ibadan, Oyo State, and across Nigerian states are conducted through verified logistics partners. Delivery tracking updates are communicated directly to your phone and email.",
+        "Return & Inspection Policy: Customers are entitled to inspect goods upon receipt. Any defect or discrepancy must be reported within 7 days of delivery for prompt replacement or resolution.",
+        "Intellectual Property: All branding, technical specs, imagery, and catalog content on this website are the proprietary assets of NIKDEL E-Commerce."
       ]
     },
     privacy: {
       title: "Privacy Policy",
       icon: <ShieldCheck size={32} className="text-brand-600" />,
-      date: "August 20, 2026",
+      date: "January 2026",
       text: [
-        "At NIKDEL, we take your privacy seriously. This policy describes how we collect, use, and protect your personal information.",
-        "We collect information you provide directly to us when you create an account, make a purchase, or contact support.",
-        "We do not sell, trade, or rent Users personal identification information to others.",
-        "We adopt appropriate data collection, storage and processing practices and security measures to protect against unauthorized access."
+        "At NIKDEL, protecting your personal data and commercial information is our highest priority.",
+        "Information Collected: We collect standard contact and delivery credentials (name, delivery address, phone number, and email) solely to process orders, communicate tracking updates, and provide after-sales support.",
+        "Secure Transactions: Financial transactions are processed via bank-grade encrypted gateways including Paystack. NIKDEL never stores your raw card numbers or CVV codes on our servers.",
+        "Data Confidentiality: We do not sell, rent, or trade your personal details with third-party advertisers. Data is shared exclusively with our verified courier services for delivery purposes."
       ]
     },
     cookie: {
-      title: "Cookie Preferences",
+      title: "Cookie & Preference Policy",
       icon: <Settings size={32} className="text-brand-600" />,
-      date: "August 10, 2026",
+      date: "January 2026",
       text: [
-        "This site uses cookies – small text files that are placed on your machine to help the site provide a better user experience.",
-        "In general, cookies are used to retain user preferences, store information for things like shopping carts, and provide anonymized tracking data to third party applications like Google Analytics.",
-        "As a rule, cookies will make your browsing experience better. However, you may prefer to disable cookies on this site.",
-        "The most effective way to do this is to disable cookies in your browser."
+        "NIKDEL uses lightweight cookies and local browser storage to keep you securely signed in, preserve your shopping cart across sessions, and recall your regional delivery preferences.",
+        "Performance & Analytics: We utilize anonymous telemetry to understand catalog browsing performance and optimize page loading speeds across mobile and desktop devices.",
+        "User Control: You can adjust cookie preferences or clear your local storage at any time through your browser settings without losing access to basic browsing."
       ]
     }
   };

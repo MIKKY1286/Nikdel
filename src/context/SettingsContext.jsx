@@ -12,6 +12,18 @@ export function SettingsProvider({ children }) {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const defaultSettings = {
+    storeName: "Nikdel Webstore",
+    contactEmail: "support@nikdel.com",
+    storeDescription: "Premier destination for quality building materials, power tools, and agricultural equipment.",
+    storeAddress: "Wema Complex, Ibadan, Oyo State, Nigeria",
+    storePhone: "+234 907 579 3786",
+    whatsappNumber: "2349075793786",
+    operatingHours: "Mon - Sat: 8:00 AM - 6:00 PM (WAT)",
+    currency: "NGN",
+    timezone: "(GMT+01:00) West Africa Time (Lagos/Ibadan)"
+  };
+
   const fetchSettings = async () => {
     try {
       const response = await api.get('/settings');
@@ -21,11 +33,11 @@ export function SettingsProvider({ children }) {
       }
       
       const localExt = JSON.parse(localStorage.getItem('nikdel_extended_settings') || '{}');
-      setSettings({ ...backendSettings, ...localExt });
+      setSettings({ ...defaultSettings, ...backendSettings, ...localExt });
     } catch (error) {
       console.error('Failed to fetch settings:', error);
       const localExt = JSON.parse(localStorage.getItem('nikdel_extended_settings') || '{}');
-      setSettings(localExt);
+      setSettings({ ...defaultSettings, ...localExt });
     } finally {
       setLoading(false);
     }
@@ -34,11 +46,15 @@ export function SettingsProvider({ children }) {
   const updateSettings = async (newSettings) => {
     try {
       const backendPayload = {
-        storeName: newSettings.storeName,
-        contactEmail: newSettings.contactEmail,
-        storeDescription: newSettings.storeDescription,
-        currency: newSettings.currency,
-        timezone: newSettings.timezone
+        storeName: newSettings.storeName || defaultSettings.storeName,
+        contactEmail: newSettings.contactEmail || defaultSettings.contactEmail,
+        storeDescription: newSettings.storeDescription || defaultSettings.storeDescription,
+        storeAddress: newSettings.storeAddress || defaultSettings.storeAddress,
+        storePhone: newSettings.storePhone || defaultSettings.storePhone,
+        whatsappNumber: newSettings.whatsappNumber || defaultSettings.whatsappNumber,
+        operatingHours: newSettings.operatingHours || defaultSettings.operatingHours,
+        currency: newSettings.currency || defaultSettings.currency,
+        timezone: newSettings.timezone || defaultSettings.timezone
       };
       
       const extendedPayload = {
@@ -63,10 +79,11 @@ export function SettingsProvider({ children }) {
 
       const response = await api.put('/admin/settings', backendPayload);
       if (response.data && response.data.data) {
-        setSettings({ ...response.data.data, ...extendedPayload });
+        setSettings({ ...defaultSettings, ...response.data.data, ...extendedPayload });
         return true;
       }
-      return false;
+      setSettings(prev => ({ ...prev, ...backendPayload, ...extendedPayload }));
+      return true;
     } catch (error) {
       console.error('Failed to update settings:', error);
       return false;

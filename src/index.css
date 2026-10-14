@@ -177,6 +177,7 @@ body {
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
   img {
     -webkit-user-drag: none;
@@ -184,5 +185,30 @@ body {
     -moz-user-drag: none;
     -o-user-drag: none;
     user-drag: none;
+  }
+  ::selection {
+    background-color: var(--color-brand-500, #c37333);
+    color: #ffffff;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+  }
+
+  .premium-shadow {
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  }
+
+  .premium-shadow-hover {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .premium-shadow-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
   }
 }

@@ -11,8 +11,7 @@ import {
   Search, 
   LogOut,
   MapPin,
-  Heart,
-  ChevronDown
+  Heart
 } from "lucide-react";
 
 import { useSettings } from "../context/SettingsContext";
@@ -62,13 +61,23 @@ export default function Header() {
               </span>
             </Link>
 
-            <div className="hidden lg:flex items-center gap-2">
-              <MapPin size={18} className="text-slate-400" />
-              <div className="flex flex-col">
-                <span className="text-[10px] text-slate-400 font-semibold leading-none">Deliver to</span>
-                <span className="text-xs font-bold text-slate-800 leading-none mt-1">all</span>
+            <Link 
+              to={currentUser ? "/account/addresses" : "/contact"} 
+              className="hidden lg:flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-slate-50 transition-colors group cursor-pointer border border-transparent hover:border-slate-100"
+              title="Delivery destination"
+            >
+              <div className="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center text-brand-600 group-hover:scale-105 transition-transform">
+                <MapPin size={16} />
               </div>
-            </div>
+              <div className="flex flex-col text-left">
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none">Deliver to</span>
+                <span className="text-xs font-extrabold text-slate-800 leading-none mt-1 truncate max-w-[150px] group-hover:text-brand-600 transition-colors">
+                  {currentUser?.addresses?.length > 0
+                    ? (currentUser.addresses.find(a => a.isDefault) || currentUser.addresses[0]).city || "Ibadan, Nigeria"
+                    : "Ibadan, Nigeria"}
+                </span>
+              </div>
+            </Link>
           </div>
 
           {/* Search Bar */}
@@ -178,33 +187,33 @@ export default function Header() {
             
             {/* Nav Links */}
             <nav className="flex space-x-8 text-[13px]">
-              <Link to="/" className={`flex items-center gap-1 border-b-2 py-3.5 ${location.pathname === '/' ? 'border-[#6f56a3] text-[#6f56a3] font-bold' : 'border-transparent text-slate-800 font-bold hover:text-[#6f56a3]'}`}>
-                Home <ChevronDown size={14} className="text-slate-400" />
+              <Link to="/" className={`flex items-center border-b-2 py-3.5 transition-colors ${location.pathname === '/' ? 'border-brand-600 text-brand-600 font-extrabold' : 'border-transparent text-slate-800 font-bold hover:text-brand-600'}`}>
+                Home
               </Link>
-              <Link to="/shop" className={`flex items-center gap-1 border-b-2 py-3.5 ${location.pathname.startsWith('/shop') ? 'border-[#6f56a3] text-[#6f56a3] font-bold' : 'border-transparent text-slate-800 font-bold hover:text-[#6f56a3]'}`}>
-                Shop <ChevronDown size={14} className="text-slate-400" />
+              <Link to="/shop" className={`flex items-center border-b-2 py-3.5 transition-colors ${location.pathname === '/shop' ? 'border-brand-600 text-brand-600 font-extrabold' : 'border-transparent text-slate-800 font-bold hover:text-brand-600'}`}>
+                Shop
               </Link>
-              <Link to="/shop?category=building-materials" className="flex items-center border-b-2 border-transparent py-3.5 text-slate-800 font-bold hover:text-[#6f56a3]">
+              <Link to="/shop?category=building-materials" className="flex items-center border-b-2 border-transparent py-3.5 text-slate-800 font-bold hover:text-brand-600 transition-colors">
                 Building Materials
               </Link>
-              <Link to="/shop?category=power-tools" className="flex items-center border-b-2 border-transparent py-3.5 text-slate-800 font-bold hover:text-[#6f56a3]">
+              <Link to="/shop?category=power-tools" className="flex items-center border-b-2 border-transparent py-3.5 text-slate-800 font-bold hover:text-brand-600 transition-colors">
                 Power Tools
               </Link>
-              <Link to="/blog" className="flex items-center border-b-2 border-transparent py-3.5 text-slate-800 font-bold hover:text-[#6f56a3]">
+              <Link to="/blog" className={`flex items-center border-b-2 py-3.5 transition-colors ${location.pathname.startsWith('/blog') ? 'border-brand-600 text-brand-600 font-extrabold' : 'border-transparent text-slate-800 font-bold hover:text-brand-600'}`}>
                 Blog
               </Link>
-              <Link to="/contact" className="flex items-center border-b-2 border-transparent py-3.5 text-slate-800 font-bold hover:text-[#6f56a3]">
+              <Link to="/contact" className={`flex items-center border-b-2 py-3.5 transition-colors ${location.pathname === '/contact' ? 'border-brand-600 text-brand-600 font-extrabold' : 'border-transparent text-slate-800 font-bold hover:text-brand-600'}`}>
                 Contact
               </Link>
             </nav>
 
             {/* Nav Right */}
             <div className="flex items-center space-x-6 text-[13px]">
-              <Link to="/trending" className="flex items-center gap-1 text-slate-800 font-bold hover:text-[#6f56a3]">
-                Trending Products <ChevronDown size={14} className="text-slate-400" />
+              <Link to="/trending" className={`flex items-center transition-colors ${location.pathname === '/trending' ? 'text-brand-600 font-extrabold' : 'text-slate-800 font-bold hover:text-brand-600'}`}>
+                Trending Products
               </Link>
-              <Link to="/sale" className="flex items-center gap-2 text-red-500 font-bold hover:text-red-600">
-                Almost Finished <span className="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded tracking-wide">SALE</span> <ChevronDown size={14} className="text-slate-400" />
+              <Link to="/sale" className="flex items-center gap-2 text-rose-600 font-bold hover:text-rose-700 transition-colors">
+                Almost Finished <span className="bg-rose-500 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded tracking-wide shadow-sm">SALE</span>
               </Link>
             </div>
           </div>

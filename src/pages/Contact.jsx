@@ -1,13 +1,21 @@
 import React, { useState, useRef } from "react";
-import { MapPin, Phone, Mail, Send, Loader } from "lucide-react";
+import { MapPin, Phone, Mail, Send, Loader, MessageCircle } from "lucide-react";
 import emailjs from '@emailjs/browser';
 import { useToast } from "../context/ToastContext";
+import { useSettings } from "../context/SettingsContext";
 
 export default function Contact() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const form = useRef();
   const { showToast } = useToast();
+  const { settings } = useSettings();
+
+  const storeAddress = settings?.storeAddress || "Wema Complex, Ibadan, Oyo State, Nigeria";
+  const storePhone = settings?.storePhone || "+234 907 579 3786";
+  const whatsappNumber = settings?.whatsappNumber || "2349075793786";
+  const contactEmail = settings?.contactEmail || "support@nikdel.com";
+  const operatingHours = settings?.operatingHours || "Mon - Sat: 8:00 AM - 6:00 PM (WAT)";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -39,33 +47,60 @@ export default function Contact() {
   return (
     <div className="max-w-5xl mx-auto space-y-12">
       <div className="text-center space-y-4">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900">Get in Touch</h1>
-        <p className="text-slate-500 max-w-xl mx-auto">
-          Have a question about your order, our products, or just want to say hi? We'd love to hear from you.
+        <span className="inline-block bg-brand-50 text-brand-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-brand-200">
+          Customer Support & Inquiries
+        </span>
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">Get in Touch</h1>
+        <p className="text-slate-500 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
+          Have questions about construction materials, machinery, power tools, or order delivery? We are here to assist you.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="bg-white p-8 rounded-2xl border border-slate-100 flex flex-col items-center text-center shadow-sm">
-          <div className="w-12 h-12 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white p-8 rounded-2xl border border-slate-100 flex flex-col items-center text-center shadow-sm hover:shadow-md transition-shadow">
+          <div className="w-12 h-12 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mb-4 border border-brand-100">
             <MapPin size={24} />
           </div>
-          <h3 className="font-bold text-slate-900 mb-2">Our Office</h3>
-          <p className="text-sm text-slate-500">123 Commerce Avenue, Suite 400<br/>New York, NY 10001</p>
+          <h3 className="font-bold text-slate-900 mb-2">Our Physical Location</h3>
+          <p className="text-sm text-slate-600 leading-relaxed font-medium">
+            {storeAddress}
+          </p>
         </div>
-        <div className="bg-white p-8 rounded-2xl border border-slate-100 flex flex-col items-center text-center shadow-sm">
-          <div className="w-12 h-12 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center mb-4">
+
+        <div className="bg-white p-8 rounded-2xl border border-slate-100 flex flex-col items-center text-center shadow-sm hover:shadow-md transition-shadow">
+          <div className="w-12 h-12 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mb-4 border border-brand-100">
             <Phone size={24} />
           </div>
-          <h3 className="font-bold text-slate-900 mb-2">Phone</h3>
-          <p className="text-sm text-slate-500">+1 (800) 555-0199<br/>Mon-Fri 9am to 6pm EST</p>
+          <h3 className="font-bold text-slate-900 mb-2">Phone & WhatsApp</h3>
+          <p className="text-sm text-slate-600 leading-relaxed font-medium mb-3">
+            <a href={`tel:${storePhone.replace(/\s+/g, '')}`} className="hover:text-brand-600 font-bold transition-colors">
+              {storePhone}
+            </a>
+            <br />
+            <span className="text-xs text-slate-400">{operatingHours}</span>
+          </p>
+          <a
+            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hello Nikdel, I have an inquiry regarding your products.")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-full transition-colors"
+          >
+            <MessageCircle size={14} /> Chat on WhatsApp
+          </a>
         </div>
-        <div className="bg-white p-8 rounded-2xl border border-slate-100 flex flex-col items-center text-center shadow-sm">
-          <div className="w-12 h-12 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center mb-4">
+
+        <div className="bg-white p-8 rounded-2xl border border-slate-100 flex flex-col items-center text-center shadow-sm hover:shadow-md transition-shadow">
+          <div className="w-12 h-12 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mb-4 border border-brand-100">
             <Mail size={24} />
           </div>
-          <h3 className="font-bold text-slate-900 mb-2">Email</h3>
-          <p className="text-sm text-slate-500">support@nikdel.com<br/>We reply within 24 hours</p>
+          <h3 className="font-bold text-slate-900 mb-2">Direct Email</h3>
+          <p className="text-sm text-slate-600 leading-relaxed font-medium">
+            <a href={`mailto:${contactEmail}`} className="hover:text-brand-600 font-bold transition-colors">
+              {contactEmail}
+            </a>
+            <br />
+            <span className="text-xs text-slate-400">Response within 24 hours</span>
+          </p>
         </div>
       </div>
 

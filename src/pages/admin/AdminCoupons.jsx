@@ -3,6 +3,7 @@ import { Plus, Search, Edit, Trash2, Ticket } from "lucide-react";
 import adminService from "../../services/admin.service";
 import AdminCouponForm from "../../components/admin/AdminCouponForm";
 import { useToast } from "../../context/ToastContext";
+import { useSettings } from "../../context/SettingsContext";
 
 export default function AdminCoupons() {
   const [coupons, setCoupons] = useState([]);
@@ -13,6 +14,7 @@ export default function AdminCoupons() {
 
   const [loading, setLoading] = useState(true);
   const { showToast } = useToast();
+  const { formatPrice } = useSettings();
 
   const fetchCoupons = async () => {
     try {
@@ -137,7 +139,7 @@ export default function AdminCoupons() {
                   </td>
                   <td className="px-6 py-4 font-bold text-slate-900">
                     {coupon.type === 'percentage' ? `${coupon.value}% Off` : 
-                     coupon.type === 'fixed' ? `$${coupon.value.toFixed(2)} Off` : 
+                     coupon.type === 'fixed' ? `${formatPrice(coupon.value)} Off` : 
                      'Free Shipping'}
                   </td>
                   <td className="px-6 py-4 text-slate-600 font-semibold">{coupon.usageCount}</td>

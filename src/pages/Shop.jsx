@@ -4,8 +4,10 @@ import ProductCard from "../components/ProductCard";
 import { SlidersHorizontal, ArrowUpDown, Search, RefreshCw, X } from "lucide-react";
 import productService from "../services/product.service";
 import categoryService from "../services/category.service";
+import { useSettings } from "../context/SettingsContext";
 
 export default function Shop() {
+  const { formatPrice } = useSettings();
   const [products, setProducts] = useState([]);
   const [filterCategories, setFilterCategories] = useState([{ name: "All Products", value: "all" }]);
   const [loading, setLoading] = useState(true);
@@ -213,7 +215,7 @@ export default function Shop() {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider">Max Price</h3>
-              <span className="text-sm font-extrabold text-brand-600">${priceRange}</span>
+              <span className="text-sm font-extrabold text-brand-600">{formatPrice(priceRange)}</span>
             </div>
             <input
               type="range"
@@ -225,8 +227,8 @@ export default function Shop() {
               className="w-full accent-brand-600 cursor-ew-resize"
             />
             <div className="flex justify-between text-[11px] text-slate-450 font-semibold">
-              <span>$5</span>
-              <span>$1000+</span>
+              <span>{formatPrice(5)}</span>
+              <span>{formatPrice(1000)}+</span>
             </div>
           </div>
 
@@ -330,7 +332,7 @@ export default function Shop() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider">Max Price</h3>
-                  <span className="text-sm font-extrabold text-brand-600">${priceRange}</span>
+                  <span className="text-sm font-extrabold text-brand-600">{formatPrice(priceRange)}</span>
                 </div>
                 <input
                   type="range"
@@ -342,8 +344,8 @@ export default function Shop() {
                   className="w-full accent-brand-600 cursor-ew-resize"
                 />
                 <div className="flex justify-between text-[10px] text-slate-400 font-semibold">
-                  <span>$5</span>
-                  <span>$1000+</span>
+                  <span>{formatPrice(5)}</span>
+                  <span>{formatPrice(1000)}+</span>
                 </div>
               </div>
 

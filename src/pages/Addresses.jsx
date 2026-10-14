@@ -187,31 +187,31 @@ export default function Addresses() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
-                  <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
+                  <input type="text" name="fullName" placeholder="e.g. Adebayo Adeleke" value={formData.fullName} onChange={handleChange} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-slate-700 mb-1">Street Address</label>
-                  <input type="text" name="street" value={formData.street} onChange={handleChange} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
+                  <input type="text" name="street" placeholder="e.g. Plot 12, Commercial Ave, Ring Road" value={formData.street} onChange={handleChange} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">City</label>
-                  <input type="text" name="city" value={formData.city} onChange={handleChange} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
+                  <input type="text" name="city" placeholder="e.g. Ibadan" value={formData.city} onChange={handleChange} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">State</label>
-                  <input type="text" name="state" value={formData.state} onChange={handleChange} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
+                  <input type="text" name="state" placeholder="e.g. Oyo State" value={formData.state} onChange={handleChange} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">ZIP / Postal Code</label>
-                  <input type="text" name="zipCode" value={formData.zipCode} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Postal Code (Optional)</label>
+                  <input type="text" name="zipCode" placeholder="e.g. 200223" value={formData.zipCode} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">Country</label>
-                  <input type="text" name="country" value={formData.country} onChange={handleChange} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
+                  <input type="text" name="country" placeholder="Nigeria" value={formData.country} onChange={handleChange} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
-                  <input type="text" name="phone" value={formData.phone} onChange={handleChange} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
+                  <input type="text" name="phone" placeholder="e.g. 0907 579 3786" value={formData.phone} onChange={handleChange} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
                 </div>
                 
                 <div className="col-span-2 flex items-center gap-2 mt-2">

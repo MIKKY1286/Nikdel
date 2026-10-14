@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Search, Bell, MessageSquare, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useSettings } from "../../context/SettingsContext";
 
 export default function AdminHeader({ toggleSidebar }) {
   const { currentUser, logout } = useAuth();
+  const { formatPrice } = useSettings();
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -76,14 +78,14 @@ export default function AdminHeader({ toggleSidebar }) {
               </div>
               <div className="max-h-64 overflow-y-auto">
                 <div className="px-4 py-3 border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors">
-                  <p className="text-xs font-bold text-slate-800">Customer Support</p>
-                  <p className="text-[11px] text-slate-500 truncate mt-0.5">Need help with order #12345.</p>
-                  <p className="text-[9px] text-slate-400 mt-1">5 mins ago</p>
+                  <p className="text-xs font-bold text-slate-800">Adebayo (Ibadan)</p>
+                  <p className="text-[11px] text-slate-500 truncate mt-0.5">Order delivered safely to site.</p>
+                  <p className="text-[9px] text-slate-400 mt-1">10 mins ago</p>
                 </div>
                 <div className="px-4 py-3 border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors">
-                  <p className="text-xs font-bold text-slate-800">John Doe</p>
-                  <p className="text-[11px] text-slate-500 truncate mt-0.5">Do you ship internationally?</p>
-                  <p className="text-[9px] text-slate-400 mt-1">2 hours ago</p>
+                  <p className="text-xs font-bold text-slate-800">Engr. Tunde (Contractor)</p>
+                  <p className="text-[11px] text-slate-500 truncate mt-0.5">Bulk inquiry for Total & Bosch tools.</p>
+                  <p className="text-[9px] text-slate-400 mt-1">1 hour ago</p>
                 </div>
               </div>
               <div className="px-4 py-2 mt-1 text-center">
@@ -116,7 +118,7 @@ export default function AdminHeader({ toggleSidebar }) {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-slate-800">New Order Placed</p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">Order #8901 was just placed for $120.00</p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">Order #8901 was just placed for {formatPrice(120)}</p>
                     <p className="text-[9px] text-slate-400 mt-1">10 mins ago</p>
                   </div>
                 </div>

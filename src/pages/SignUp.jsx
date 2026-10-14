@@ -150,7 +150,7 @@ export default function SignUp({ isAdmin = false }) {
             <div className="relative">
               <input
                 type="text"
-                placeholder="John Doe"
+                placeholder="e.g. Adebayo Adeleke"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required

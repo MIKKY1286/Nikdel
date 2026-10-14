@@ -36,16 +36,20 @@ export default function ProductCard({ product }) {
   // Parse image: some APIs return an array of images, others a single string
   const imageUrl = Array.isArray(product.images) && product.images.length > 0 
     ? product.images[0] 
-    : (product.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60");
+    : (product.image || "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=500&auto=format&fit=crop&q=60");
 
   // Format clean category name
   const categoryName = product.category && typeof product.category === 'object'
     ? product.category.name
     : (product.category || "Uncategorized");
 
-  // Create a stable mock rating and reviews count based on product id
-  const rating = parseFloat(((Math.abs(hashCode(productId || "")) % 15) / 10 + 3.5).toFixed(1));
-  const reviewCount = (Math.abs(hashCode(productId || "")) % 120) + 12;
+  // Prioritize actual product ratings and review count
+  const rating = product.averageRating 
+    ? Number(product.averageRating).toFixed(1) 
+    : parseFloat(((Math.abs(hashCode(productId || "")) % 15) / 10 + 3.5).toFixed(1));
+  const reviewCount = product.numOfReviews !== undefined 
+    ? product.numOfReviews 
+    : (Math.abs(hashCode(productId || "")) % 120) + 12;
 
   function hashCode(str) {
     let hash = 0;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import productService from "../services/product.service";
 import { ShoppingCart, Heart, Share2, ArrowRightLeft, ShieldCheck, CreditCard, Plus, Minus, Star, MessageCircle, Trash2 } from "lucide-react";
@@ -13,7 +13,8 @@ export default function ProductDetail() {
   const { currentUser } = useAuth();
   const { addToCart, cart, updateQuantity, removeFromCart } = useCart();
   const { showToast } = useToast();
-  const { formatPrice } = useSettings();
+  const { formatPrice, settings } = useSettings();
+  const whatsappNumber = settings?.whatsappNumber || "2349075793786";
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -201,13 +202,13 @@ export default function ProductDetail() {
         <div className="space-y-4">
           <div className="bg-white border border-slate-100 rounded-3xl p-8 flex items-center justify-center relative">
             {/* Badges */}
-            <div className="absolute top-6 left-6 space-y-2">
-              <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md block w-max">
-                68%
+            <div className="absolute top-6 left-6 flex flex-col gap-1.5 z-10">
+              <span className="bg-slate-900 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md block w-max uppercase tracking-wider shadow-sm">
+                {product.category?.name || product.category || "Authentic"}
               </span>
-              <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1 w-max">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                ORGANIC
+              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2.5 py-1 rounded-md flex items-center gap-1.5 w-max shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                IN STOCK (Fast Dispatch)
               </span>
             </div>
             {(() => {
@@ -264,8 +265,13 @@ export default function ProductDetail() {
           </div>
 
           <div>
-            <a href={`https://wa.me/1234567890?text=${encodeURIComponent(`Hello, I would like to order: ${product.name} (SKU: ${product.SKU || productId})`)}`} target="_blank" rel="noopener noreferrer" className="inline-flex bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-bold px-6 py-2.5 rounded-full items-center gap-2 transition-colors">
-              <MessageCircle size={16} /> Order on WhatsApp
+            <a 
+              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hello Nikdel, I would like to order: ${product.name} (SKU: ${product.SKU || productId})`)}`} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-extrabold px-6 py-3 rounded-xl items-center gap-2.5 transition-all shadow-md shadow-emerald-600/20 hover:scale-[1.02]"
+            >
+              <MessageCircle size={18} /> Order via WhatsApp Direct
             </a>
           </div>
 
@@ -349,18 +355,26 @@ export default function ProductDetail() {
           </div>
 
           <div className="space-y-3 pt-4">
-            <div className="flex items-start gap-4 p-4 border border-slate-100 rounded-xl bg-slate-50/50">
-              <CreditCard size={20} className="text-slate-400 shrink-0 mt-1" />
+            <div className="flex items-start gap-4 p-4 border border-slate-100 rounded-2xl bg-slate-50/60 hover:bg-slate-50 transition-colors">
+              <div className="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0 mt-0.5">
+                <CreditCard size={18} />
+              </div>
               <div>
-                <h4 className="text-sm font-bold text-slate-800">Payment.</h4>
-                <p className="text-xs text-slate-500 leading-relaxed">Payment upon receipt of goods, Payment by card in the department, Google Pay, Online card, -5% discount in case of payment</p>
+                <h4 className="text-sm font-extrabold text-slate-900">Secure Payment Options</h4>
+                <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
+                  Pay with confidence via Paystack, Debit/Credit Card (Mastercard, Visa, Verve), Bank Transfer, or POS upon verified delivery.
+                </p>
               </div>
             </div>
-            <div className="flex items-start gap-4 p-4 border border-slate-100 rounded-xl bg-slate-50/50">
-              <ShieldCheck size={20} className="text-slate-400 shrink-0 mt-1" />
+            <div className="flex items-start gap-4 p-4 border border-slate-100 rounded-2xl bg-slate-50/60 hover:bg-slate-50 transition-colors">
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                <ShieldCheck size={18} />
+              </div>
               <div>
-                <h4 className="text-sm font-bold text-slate-800">Warranty.</h4>
-                <p className="text-xs text-slate-500 leading-relaxed">The Consumer Protection Act does not provide for the return of this product of proper quality.</p>
+                <h4 className="text-sm font-extrabold text-slate-900">Quality Guarantee & Easy Returns</h4>
+                <p className="text-xs text-slate-500 leading-relaxed mt-0.5">
+                  100% genuine industrial and construction supplies sourced directly from certified manufacturers. 7-day hassle-free exchange on eligible items.
+                </p>
               </div>
             </div>
           </div>

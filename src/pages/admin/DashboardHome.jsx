@@ -6,8 +6,10 @@ import {
   Users
 } from "lucide-react";
 import adminService from "../../services/admin.service";
+import { useSettings } from "../../context/SettingsContext";
 
 export default function DashboardHome() {
+  const { formatPrice } = useSettings();
   const [stats, setStats] = useState({
     totalSales: 0,
     totalOrders: 0,
@@ -75,7 +77,7 @@ export default function DashboardHome() {
             </div>
             <div>
               <span className="text-xs text-slate-400 block font-semibold">Total Revenue</span>
-              <span className="text-xl font-extrabold text-slate-900">${stats.totalSales.toFixed(2)}</span>
+              <span className="text-xl font-extrabold text-slate-900">{formatPrice(stats.totalSales)}</span>
             </div>
           </div>
 
@@ -97,7 +99,7 @@ export default function DashboardHome() {
             </div>
             <div>
               <span className="text-xs text-slate-400 block font-semibold">Average Value</span>
-              <span className="text-xl font-extrabold text-slate-900">${stats.avgOrderValue.toFixed(2)}</span>
+              <span className="text-xl font-extrabold text-slate-900">{formatPrice(stats.avgOrderValue)}</span>
             </div>
           </div>
 

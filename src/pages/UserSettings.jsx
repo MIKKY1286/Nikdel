@@ -168,7 +168,7 @@ export default function UserSettings() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="John Doe" 
+                placeholder="e.g. Adebayo Adeleke" 
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" 
               />
             </div>
@@ -185,7 +185,7 @@ export default function UserSettings() {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              placeholder="+1 (555) 000-0000" 
+              placeholder="e.g. +234 907 579 3786" 
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" 
             />
           </div>

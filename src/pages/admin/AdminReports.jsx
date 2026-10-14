@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { BarChart3, TrendingUp, TrendingDown, DollarSign, Users, Download, Activity } from "lucide-react";
 import adminService from "../../services/admin.service";
+import { useSettings } from "../../context/SettingsContext";
 
 export default function AdminReports() {
+  const { formatPrice } = useSettings();
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -54,7 +56,7 @@ export default function AdminReports() {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-sm font-bold text-slate-500 uppercase tracking-wider">Total Revenue</p>
-              <h3 className="text-3xl font-extrabold text-slate-900 mt-2">${data.revenue.current.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+              <h3 className="text-3xl font-extrabold text-slate-900 mt-2">{formatPrice(data.revenue.current)}</h3>
             </div>
             <div className="p-3 bg-brand-50 text-brand-600 rounded-xl">
               <DollarSign size={24} />

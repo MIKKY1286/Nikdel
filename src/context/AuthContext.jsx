@@ -11,22 +11,45 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem("nikdel_user");
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [loading, setLoading] = useState(() => {
+    return Boolean(localStorage.getItem("nikdel_token") && !localStorage.getItem("nikdel_user"));
+  });
 
   // Function to load the current user from backend using the token
   const loadUser = async () => {
+    const token = localStorage.getItem("nikdel_token");
+    if (!token) {
+      setCurrentUser(null);
+      setLoading(false);
+      return;
+    }
+
     try {
-      const token = localStorage.getItem("nikdel_token");
-      if (token) {
-        const response = await api.get("/users/me");
-        setCurrentUser(response.data.user || response.data.data);
-      } else {
-        setCurrentUser(null);
+      const response = await api.get("/users/me");
+      const userData = response.data.user || response.data.data;
+      if (userData) {
+        setCurrentUser(userData);
+        try {
+          localStorage.setItem("nikdel_user", JSON.stringify(userData));
+        } catch {
+          // ignore quota issues
+        }
       }
     } catch (error) {
-      console.error("Failed to load user", error);
-      setCurrentUser(null);
+      console.warn("User session verification notice:", error?.message);
+      if (error?.response?.status === 401) {
+        localStorage.removeItem("nikdel_token");
+        localStorage.removeItem("nikdel_user");
+        setCurrentUser(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -184,6 +207,7 @@ export function AuthProvider({ children }) {
 
   const value = {
     currentUser,
+    loading,
     signup,
     login,
     loginWithGoogle,
@@ -199,14 +223,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {loading ? (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-slate-900 border-r-transparent mb-4"></div>
-          <p className="text-slate-500 font-medium animate-pulse">Loading...</p>
-        </div>
-      ) : (
-        children
-      )}
+      {children}
     </AuthContext.Provider>
   );
 }

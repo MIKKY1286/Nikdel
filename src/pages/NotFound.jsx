@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Compass, Home, ShoppingBag, ArrowLeft, MessageSquare, Wrench, HardHat, Tractor } from "lucide-react";
+import { Compass, Home, ShoppingBag, MessageSquare, Wrench, HardHat, Tractor } from "lucide-react";
 import { useSettings } from "../context/SettingsContext";
 
 export default function NotFound() {

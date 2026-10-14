@@ -7,11 +7,7 @@ const SettingsContext = createContext();
 export function useSettings() {
   return useContext(SettingsContext);
 }
-
 export function SettingsProvider({ children }) {
-  const [settings, setSettings] = useState(null);
-  const [loading, setLoading] = useState(true);
-
   const defaultSettings = {
     storeName: "Nikdel Webstore",
     contactEmail: "support@nikdel.com",
@@ -24,20 +20,40 @@ export function SettingsProvider({ children }) {
     timezone: "(GMT+01:00) West Africa Time (Lagos/Ibadan)"
   };
 
+  const [settings, setSettings] = useState(() => {
+    try {
+      const cached = localStorage.getItem('nikdel_cached_settings');
+      const localExt = localStorage.getItem('nikdel_extended_settings');
+      return {
+        ...defaultSettings,
+        ...(cached ? JSON.parse(cached) : {}),
+        ...(localExt ? JSON.parse(localExt) : {})
+      };
+    } catch {
+      return defaultSettings;
+    }
+  });
+  const [loading, setLoading] = useState(false);
+
   const fetchSettings = async () => {
     try {
       const response = await api.get('/settings');
       let backendSettings = {};
       if (response.data && response.data.data) {
         backendSettings = response.data.data;
+        try {
+          localStorage.setItem('nikdel_cached_settings', JSON.stringify(backendSettings));
+        } catch {
+          // ignore storage quota errors
+        }
       }
       
       const localExt = JSON.parse(localStorage.getItem('nikdel_extended_settings') || '{}');
       setSettings({ ...defaultSettings, ...backendSettings, ...localExt });
     } catch (error) {
-      console.error('Failed to fetch settings:', error);
+      console.warn('Backend settings unavailable, using defaults/cached:', error?.message);
       const localExt = JSON.parse(localStorage.getItem('nikdel_extended_settings') || '{}');
-      setSettings({ ...defaultSettings, ...localExt });
+      setSettings(prev => ({ ...defaultSettings, ...prev, ...localExt }));
     } finally {
       setLoading(false);
     }
@@ -96,7 +112,7 @@ export function SettingsProvider({ children }) {
     // eslint-disable-next-line
     fetchSettings();
     
-    // Fetch live exchange rates
+    // Fetch live exchange rates with 3.5s timeout and fallback
     const fetchRates = async () => {
       try {
         const cached = localStorage.getItem('nikdel_exchange_rates');
@@ -109,7 +125,13 @@ export function SettingsProvider({ children }) {
           }
         }
         
-        const response = await fetch('https://open.er-api.com/v6/latest/USD');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3500);
+        
+        const response = await fetch('https://open.er-api.com/v6/latest/USD', {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
         const data = await response.json();
         if (data && data.rates) {
           setExchangeRates(data.rates);
@@ -119,7 +141,8 @@ export function SettingsProvider({ children }) {
           }));
         }
       } catch (err) {
-        console.error('Failed to fetch exchange rates:', err);
+        console.warn('Live exchange rates unavailable or timed out, using fallback:', err?.message);
+        setExchangeRates(prev => prev || { USD: 1, NGN: 1600, EUR: 0.92, GBP: 0.78 });
       }
     };
     
@@ -178,14 +201,7 @@ export function SettingsProvider({ children }) {
 
   return (
     <SettingsContext.Provider value={value}>
-      {loading ? (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-slate-900 border-r-transparent mb-4"></div>
-          <p className="text-slate-500 font-medium animate-pulse">Loading...</p>
-        </div>
-      ) : (
-        children
-      )}
+      {children}
     </SettingsContext.Provider>
   );
 }

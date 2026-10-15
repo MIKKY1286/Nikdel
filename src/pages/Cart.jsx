@@ -8,7 +8,7 @@ import { Trash2, ShoppingBag, Plus, Minus, ArrowRight, Ticket, Check } from "luc
 
 export default function Cart() {
   const { currentUser } = useAuth();
-  const { cart, removeFromCart, updateQuantity, cartTotal, orders } = useCart();
+  const { cart, removeFromCart, updateQuantity, cartTotal, orders, loadingCart } = useCart();
   const { formatPrice } = useSettings();
   const navigate = useNavigate();
 
@@ -66,6 +66,15 @@ export default function Cart() {
     );
   }
 
+  if (loadingCart) {
+    return (
+      <div className="max-w-md mx-auto my-24 text-center py-12">
+        <div className="w-10 h-10 border-4 border-slate-900 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-sm font-semibold text-slate-500">Loading your cart...</p>
+      </div>
+    );
+  }
+
   if (cart.length === 0) {
     return (
       <div className="max-w-md mx-auto my-12 text-center bg-white border border-slate-100 p-8 rounded-2xl shadow-sm space-y-6">
@@ -96,7 +105,8 @@ export default function Cart() {
   const tax = subtotal * 0.08;
   
   const hasPreviousOrders = orders && orders.length > 0;
-  const shipping = !hasPreviousOrders ? 0 : (subtotal > 150 ? 0 : 10 + cart.length * 2);
+  // Free shipping ONLY on the first order; returning customers pay shipping fee
+  const shipping = !hasPreviousOrders ? 0 : (10 + cart.length * 2);
   
   const total = subtotal + tax + shipping;
 
@@ -272,18 +282,13 @@ export default function Cart() {
                 <span>
                   {shipping === 0 ? (
                     <span className="text-emerald-600 font-bold">
-                      {!hasPreviousOrders ? "FREE (1st Order)" : "FREE"}
+                      FREE (1st Order)
                     </span>
                   ) : (
                     `${formatPrice(shipping)}`
                   )}
                 </span>
               </div>
-              {shipping > 0 && (
-                <p className="text-[10px] text-slate-400 font-semibold">
-                  Add {formatPrice(150 - subtotal)} more to unlock free shipping!
-                </p>
-              )}
               
               <div className="border-t border-slate-100 pt-4 flex justify-between font-extrabold text-slate-900 text-base">
                 <span>Grand Total</span>

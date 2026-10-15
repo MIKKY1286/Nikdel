@@ -3,7 +3,7 @@ import axios from 'axios';
 // Create an Axios instance
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1',
-  timeout: 12000,
+  timeout: 60000, // 60 seconds (allows for Render cold starts and network latency)
   headers: {
     'Content-Type': 'application/json',
   },

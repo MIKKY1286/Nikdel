@@ -302,7 +302,7 @@ export default function Orders() {
                           {order.subtotal && order.subtotal > order.total && (
                             <div className="flex justify-between text-emerald-600">
                               <span>Promo Discount</span>
-                              <span>-{formatPrice(order.subtotal - order.total + (order.tax || order.subtotal * 0.08) + (order.shipping || 0))}</span>
+                              <span>-{formatPrice(order.subtotal - order.total + (order.tax || order.subtotal * 0.08) + (order.shippingFee || order.shipping || 0))}</span>
                             </div>
                           )}
                           <div className="flex justify-between">
@@ -312,7 +312,7 @@ export default function Orders() {
                           <div className="flex justify-between">
                             <span>Shipping</span>
                             <span className="text-slate-800">
-                              {!order.shipping ? "FREE" : formatPrice(order.shipping)}
+                              {!(order.shippingFee || order.shipping) ? "FREE" : formatPrice(order.shippingFee || order.shipping)}
                             </span>
                           </div>
                           <div className="flex justify-between text-slate-900 font-extrabold text-sm border-t border-slate-100 pt-3 mt-1.5">

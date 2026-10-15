@@ -10,7 +10,7 @@ const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
 
 export default function Checkout() {
   const { currentUser, addAddress } = useAuth();
-  const { cart, placeOrder, cartTotal, orders } = useCart();
+  const { cart, placeOrder, cartTotal, orders, loadingCart } = useCart();
   const { formatPrice, settings, exchangeRates } = useSettings();
   const location = useLocation();
 
@@ -55,6 +55,15 @@ export default function Checkout() {
   const [error, setError] = useState("");
   const [saveNewAddress, setSaveNewAddress] = useState(true);
 
+  if (loadingCart) {
+    return (
+      <div className="max-w-md mx-auto my-24 text-center py-12">
+        <div className="w-10 h-10 border-4 border-slate-900 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-sm font-semibold text-slate-500">Loading checkout...</p>
+      </div>
+    );
+  }
+
   if (cart.length === 0 && !successOrder) {
     return (
       <div className="max-w-md mx-auto my-12 text-center bg-white border border-slate-100 p-8 rounded-2xl shadow-sm space-y-6">
@@ -74,7 +83,8 @@ export default function Checkout() {
   const subtotal = cartTotal - discountAmount;
   const tax = subtotal * 0.08;
   const hasPreviousOrders = orders && orders.length > 0;
-  const shipping = !hasPreviousOrders ? 0 : (subtotal > 150 ? 0 : 10 + cart.length * 2);
+  // Free shipping ONLY on first order; returning customers pay shipping fee
+  const shipping = !hasPreviousOrders ? 0 : 10 + cart.length * 2;
   const total = subtotal + tax + shipping;
 
   const handleInputChange = (e) => {
@@ -137,7 +147,7 @@ export default function Checkout() {
         }
       }
       // 1. Create order on backend first (cart is cleared upon success)
-      const order = await placeOrder(shippingDetails, null, discountAmount, appliedPromo);
+      const order = await placeOrder(shippingDetails, null, discountAmount, appliedPromo, shipping);
       if (!order) {
         throw new Error("Failed to create order");
       }
@@ -551,7 +561,7 @@ export default function Checkout() {
               <span>
                 {shipping === 0 ? (
                   <span className="text-emerald-600 font-bold">
-                    {!hasPreviousOrders ? "FREE (1st Order)" : "FREE"}
+                    FREE (1st Order)
                   </span>
                 ) : (
                   `${formatPrice(shipping)}`

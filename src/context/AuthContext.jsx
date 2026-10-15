@@ -114,7 +114,7 @@ export function AuthProvider({ children }) {
   };
 
   // Google Login function
-  const loginWithGoogle = async () => {
+  const loginWithGoogle = async (role = "customer") => {
     try {
       // 1. Trigger Firebase Google Sign-In popup
       const result = await signInWithPopup(auth, googleProvider);
@@ -123,7 +123,7 @@ export function AuthProvider({ children }) {
       const idToken = await result.user.getIdToken();
       
       // 3. Send the token to the backend to authenticate and get our custom JWT
-      const response = await api.post("/auth/google", { token: idToken });
+      const response = await api.post("/auth/google", { token: idToken, role });
       
       const payload = response.data.data || response.data;
       const token = payload.token;

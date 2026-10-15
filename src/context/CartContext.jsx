@@ -149,7 +149,7 @@ export function CartProvider({ children }) {
   };
 
   // Place Order (Checkout)
-  const placeOrder = async (shippingDetails, paymentReference, discountAmount = 0, appliedPromo = "") => {
+  const placeOrder = async (shippingDetails, paymentReference, discountAmount = 0, appliedPromo = "", shippingFee = 0) => {
     if (!currentUser || cart.length === 0) return null;
 
     try {
@@ -157,7 +157,8 @@ export function CartProvider({ children }) {
         shippingDetails,
         paymentReference,
         discountAmount,
-        appliedPromo
+        appliedPromo,
+        shippingFee
       });
       
       const createdOrder = response.data?.data || response.data;

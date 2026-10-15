@@ -58,9 +58,10 @@ export default function SignUp({ isAdmin = false }) {
     setLoading(true);
     try {
 
-      await loginWithGoogle();
-      showToast("Account created successfully via Google! Welcome to Nikdel.", "success");
-      navigate("/");
+      const targetRole = isAdmin ? "admin" : "customer";
+      await loginWithGoogle(targetRole);
+      showToast(`Account created successfully via Google! Welcome to Nikdel${isAdmin ? " Admin" : ""}.`, "success");
+      navigate(isAdmin ? "/admin" : "/", { replace: true });
     } catch (err) {
       console.error(err);
       setError(err.message || "Google Sign-In failed. Please try again.");

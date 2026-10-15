@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { 
   TrendingUp, 
   ShoppingBag, 
   DollarSign, 
-  Users
+  Users,
+  RefreshCw
 } from "lucide-react";
 import adminService from "../../services/admin.service";
 import { useSettings } from "../../context/SettingsContext";
@@ -17,38 +18,55 @@ export default function DashboardHome() {
     totalCustomers: 0
   });
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Load stats
-  useEffect(() => {
-    let active = true;
+  const fetchStats = useCallback(async (isManual = false) => {
+    if (isManual) setRefreshing(true);
+    try {
+      const response = await adminService.getDashboardStats();
+      const data = response?.data || response;
 
-    const fetchStats = async () => {
-      try {
-        const response = await adminService.getDashboardStats();
-        const data = response?.data || response; // Support both {data: ...} and direct objects
-        
-        if (active && data) {
-          setStats({
-            totalSales: data.totalSales || 0,
-            totalOrders: data.totalOrders || 0,
-            avgOrderValue: data.avgOrderValue || 0,
-            totalCustomers: data.totalCustomers || 0
-          });
-        }
-      } catch (err) {
-        console.error("Admin dashboard API error:", err);
-        // Fallback or show error
-      } finally {
-        if (active) setLoading(false);
+      if (data) {
+        const totalSales = Number(data.totalSales ?? data.totalRevenue ?? 0);
+        const totalOrders = Number(data.totalOrders ?? 0);
+        const avgOrderValue = Number(
+          data.avgOrderValue ?? (totalOrders > 0 ? Math.round((totalSales / totalOrders) * 100) / 100 : 0)
+        );
+        const totalCustomers = Number(
+          data.totalCustomers ?? data.totalUsers ?? 0
+        );
+
+        setStats({
+          totalSales,
+          totalOrders,
+          avgOrderValue,
+          totalCustomers
+        });
       }
-    };
+    } catch (err) {
+      console.error("Admin dashboard API error:", err);
+    } finally {
+      setLoading(false);
+      if (isManual) setRefreshing(false);
+    }
+  }, []);
 
+  // Initial load and periodic sync every 20 seconds
+  useEffect(() => {
     fetchStats();
 
+    const interval = setInterval(() => {
+      fetchStats();
+    }, 20000);
+
+    const handleFocus = () => fetchStats();
+    window.addEventListener("focus", handleFocus);
+
     return () => {
-      active = false;
+      clearInterval(interval);
+      window.removeEventListener("focus", handleFocus);
     };
-  }, []);
+  }, [fetchStats]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 animate-fade-in">
@@ -58,8 +76,18 @@ export default function DashboardHome() {
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Admin Dashboard</h1>
           <p className="text-sm text-slate-400 mt-1 flex items-center gap-1.5 font-medium">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            Real-time shop manager (Production API)
+            Real-time shop manager (Live Sync)
           </p>
+        </div>
+        <div>
+          <button
+            onClick={() => fetchStats(true)}
+            disabled={refreshing}
+            className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-xs disabled:opacity-60 cursor-pointer"
+          >
+            <RefreshCw size={14} className={refreshing ? "animate-spin text-brand-600" : "text-slate-400"} />
+            <span>{refreshing ? "Syncing..." : "Sync Metrics"}</span>
+          </button>
         </div>
       </div>
 

@@ -54,12 +54,39 @@ export default function AdminOrders() {
     }
   };
 
+  // Helper to extract customer username/name
+  const getCustomerName = (order) => {
+    // 1. Registered name from populated user object
+    if (order.user?.name && order.user.name.trim()) return order.user.name.trim();
+
+    // 2. Full name from shipping details
+    if (order.shippingAddress?.fullName && order.shippingAddress.fullName.trim()) return order.shippingAddress.fullName.trim();
+    if (order.shippingDetails?.fullName && order.shippingDetails.fullName.trim()) return order.shippingDetails.fullName.trim();
+
+    // 3. firstName / lastName if present
+    const firstLast = `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim();
+    if (firstLast) return firstLast;
+
+    // 4. Direct userName property
+    if (order.userName && order.userName.trim()) return order.userName.trim();
+
+    // 5. Fallback to email username if name is not set
+    const email = order.user?.email || order.userEmail;
+    if (email && email.includes('@')) {
+      return email.split('@')[0];
+    }
+
+    return "Customer";
+  };
+
   // Filters
   const filteredOrders = orders.filter(order => {
+    const customerName = getCustomerName(order);
+    const customerEmail = order.user?.email || order.userEmail || "";
     const matchesSearch = 
-      (order.id || order._id || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (order.userEmail || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (order.shippingDetails?.fullName || "").toLowerCase().includes(searchQuery.toLowerCase());
+      (order.id || order._id || order.orderNumber || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customerEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customerName.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesStatus = statusFilter === "all" || (order.orderStatus || "pending").toLowerCase() === statusFilter.toLowerCase();
     
@@ -167,7 +194,7 @@ export default function AdminOrders() {
                     minute: "2-digit"
                   }) : "Unknown Date";
 
-                  const customerName = order.shippingDetails?.fullName || order.shippingAddress?.fullName || (order.user ? `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim() : null) || order.user?.name || order.userName || "Guest Customer";
+                  const customerName = getCustomerName(order);
                   const customerEmail = order.user?.email || order.userEmail || "anonymous";
 
                   return (
@@ -245,8 +272,8 @@ export default function AdminOrders() {
                                     Delivery Coordinates
                                   </h4>
                                   <div className="bg-white border border-slate-100 p-4 rounded-xl space-y-2">
-                                    <p className="font-bold text-slate-800">{order.shippingDetails?.fullName || order.shippingAddress?.fullName || customerName}</p>
-                                    <p>{order.shippingDetails?.address || order.shippingAddress?.street || order.shippingAddress?.address}</p>
+                                    <p className="font-bold text-slate-800">{customerName}</p>
+                                    <p>{order.shippingDetails?.address || order.shippingAddress?.street || order.shippingAddress?.address || "Address not provided"}</p>
                                     <p>{order.shippingDetails?.city || order.shippingAddress?.city}, {order.shippingDetails?.zipCode || order.shippingAddress?.zipCode}, {order.shippingDetails?.country || order.shippingAddress?.country}</p>
                                     <p className="text-[10px] font-semibold text-slate-400">Phone: {order.shippingDetails?.phone || order.shippingAddress?.phone}</p>
                                   </div>
@@ -264,7 +291,7 @@ export default function AdminOrders() {
                                     </div>
                                     <div className="flex justify-between">
                                       <span>Customer UID:</span>
-                                      <span className="font-semibold text-slate-600 select-all">{order.userId}</span>
+                                      <span className="font-semibold text-slate-600 select-all">{order.user?._id || order.user || order.userId || "N/A"}</span>
                                     </div>
                                   </div>
                                 </div>
@@ -313,7 +340,7 @@ export default function AdminOrders() {
                                     </div>
                                     <div className="flex justify-between">
                                       <span>Shipping Fee</span>
-                                      <span className="text-slate-800">{order.shipping === 0 ? "FREE" : formatPrice(order.shipping)}</span>
+                                      <span className="text-slate-800">{!(order.shippingFee || order.shipping) ? "FREE" : formatPrice(order.shippingFee || order.shipping)}</span>
                                     </div>
                                     <div className="flex justify-between font-extrabold text-slate-900 border-t border-slate-100 pt-2 text-xs">
                                       <span>Grand Total</span>

@@ -45,11 +45,7 @@ export default function AdminCustomers() {
         showToast("Customer deleted successfully", "success");
       } catch (err) {
         console.error("Error deleting customer", err);
-        showToast("Failed to delete customer", "error");
-        
-        // Fallback for UI if backend route missing
-        const updated = customers.filter(c => c.id !== id);
-        setCustomers(updated);
+        showToast(err.response?.data?.message || "Failed to delete customer", "error");
       }
     }
   };
